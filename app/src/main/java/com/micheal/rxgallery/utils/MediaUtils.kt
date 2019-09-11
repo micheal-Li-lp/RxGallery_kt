@@ -124,13 +124,13 @@ object MediaUtils {
     }
 
     @JvmStatic
-    fun createThumbnailBigFileName(context: Context,originalPath :String):File{
+    fun createThumbnailBigFileName(context: Context,originalPath :String?):File{
         val storeFile =StorageUtils.getCacheDirectory(context)
         return File(storeFile,"big_${FileNameUtils.getName(originalPath)}")
     }
 
     @JvmStatic
-    fun createThumbnailSmallFileName(context: Context,originalPath: String) :File{
+    fun createThumbnailSmallFileName(context: Context,originalPath: String?) :File{
 
         val storeFile =StorageUtils.getCacheDirectory(context)
         return File(storeFile,"small_${FileNameUtils.getName(originalPath)}")

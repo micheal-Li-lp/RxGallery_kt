@@ -1,7 +1,6 @@
 package com.micheal.rxgallery.interactor.impl
 
 import android.content.Context
-import com.micheal.rxgallery.entity.BucketEntity
 import com.micheal.rxgallery.entity.MediaEntity
 import com.micheal.rxgallery.interactor.MediaSrcFactoryInteractor
 import com.micheal.rxgallery.utils.MediaUtils
@@ -10,7 +9,6 @@ import io.reactivex.ObservableOnSubscribe
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subscribers.DisposableSubscriber
 
 class MediaSrcFactoryInteractorImpl(
     private val context: Context,private val onGenerateMediaListener: MediaSrcFactoryInteractor.OnGenerateMediaListener,
