@@ -1,9 +1,11 @@
 package com.micheal.rxgallery
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
 import com.micheal.rxgallery.entity.MediaEntity
+import com.micheal.rxgallery.imageloader.*
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
 import com.yalantis.ucrop.view.OverlayView
@@ -114,5 +116,27 @@ class Configuration() :Parcelable{
         override fun newArray(size: Int): Array<Configuration?> {
             return arrayOfNulls(size)
         }
+    }
+
+    fun getImageLoader(): AbsImageLoader {
+        return when (imageLoaderType) {
+            1 ->   PicassoImageLoader()
+            2 ->   GlideImageLoader()
+            3 ->   FrescoImageLoader()
+            4 -> UniversalImageLoader()
+            5 ->  PicassoImageLoader()
+            else ->  PicassoImageLoader()
+        }
+    }
+
+
+    fun getImageConfig(): Bitmap.Config {
+        when (imageConfig) {
+            1 -> return Bitmap.Config.ALPHA_8
+            2 -> return Bitmap.Config.ARGB_4444
+            3 -> return Bitmap.Config.ARGB_8888
+            4 -> return Bitmap.Config.RGB_565
+        }
+        return Bitmap.Config.ARGB_8888
     }
 }

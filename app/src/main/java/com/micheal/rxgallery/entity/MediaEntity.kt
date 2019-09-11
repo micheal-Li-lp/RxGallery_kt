@@ -3,7 +3,7 @@ package com.micheal.rxgallery.entity
 import android.os.Parcel
 import android.os.Parcelable
 
-open class MediaEntity() : Parcelable{
+open class MediaEntity() : Parcelable,BaseEntity{
 
     //图片ID
     var id: Long = 0

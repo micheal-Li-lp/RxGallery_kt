@@ -1,12 +1,17 @@
 package com.micheal.rxgallery.ui.activity
 
 import android.os.Bundle
+import android.view.View
 import com.micheal.rxgallery.R
 import com.micheal.rxgallery.entity.MediaEntity
+import com.micheal.rxgallery.rxbus.RxBus
+import com.micheal.rxgallery.rxbus.event.ImageMultipleResultEvent
 import com.micheal.rxgallery.ui.fragment.MediaGridFragment
 import com.micheal.rxgallery.ui.fragment.MediaPageFragment
 import com.micheal.rxgallery.ui.fragment.MediaPreviewFragment
 import com.micheal.rxgallery.view.ActivityFragmentView
+import kotlinx.android.synthetic.main.gallery_activity_media.*
+import java.util.ArrayList
 
 class MediaActivity :BaseActivity(),ActivityFragmentView{
     companion object{
@@ -25,10 +30,34 @@ class MediaActivity :BaseActivity(),ActivityFragmentView{
     private var mMediaPageFragment: MediaPageFragment? = null
     private var mMediaPreviewFragment: MediaPreviewFragment? = null
 
+    private var mCheckedList: ArrayList<MediaEntity>? = null
+    private var mSelectedIndex = 0
+    private var mPageMediaList: ArrayList<MediaEntity>? = null
+    private var mPagePosition: Int = 0
+    private var mPreviewPosition: Int = 0
+
     override fun getContentView() = R.layout.gallery_activity_media
 
     override fun onCreateOk(savedInstanceState: Bundle?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        mMediaGridFragment = MediaGridFragment.newInstance(mConfiguration!!)
+
+        tv_over_action.visibility = if (!mConfiguration!!.radio) {
+            tv_over_action.setOnClickListener {
+                if (mMediaGridFragment != null && mMediaGridFragment!!.isShowRvBucketView()) {
+                    mMediaGridFragment!!.hideRvBucketView()
+                } else {
+                    if (!mCheckedList.isNullOrEmpty()) {
+                        val event = ImageMultipleResultEvent(mCheckedList)
+                        RxBus.getDefault().post(event)
+                        finish()
+                    }
+                }
+            }
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+
     }
 
     override fun findViews() {

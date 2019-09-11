@@ -13,9 +13,9 @@ import android.widget.FrameLayout
 
 @TargetApi(14)
 class SlideInUnderneathAnimation(view: View) : Animation(){
-    var direction :Int = 0
+    var direction :Int? = 0
     var interpolator : TimeInterpolator
-    var duration :Long = 0
+    var duration :Long? = 0
     var listener : AnimationListener?=null
 
     init {
@@ -59,7 +59,7 @@ class SlideInUnderneathAnimation(view: View) : Animation(){
         } ?: return
 
         slideInAnim.interpolator = this.interpolator
-        slideInAnim.duration = this.duration
+        slideInAnim.duration = this.duration!!
         slideInAnim.addListener(object :AnimatorListenerAdapter(){
             override fun onAnimationStart(animation: Animator?) {
                 view.visibility = View.VISIBLE

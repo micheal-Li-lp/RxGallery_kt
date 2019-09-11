@@ -29,10 +29,10 @@ abstract class BaseActivity :AppCompatActivity(){
             bundle = intent.extras
         }
 
-
         if (savedInstanceState != null) {
             mConfiguration = savedInstanceState.getParcelable<Parcelable>(EXTRA_CONFIGURATION) as Configuration
         }
+
         if (mConfiguration == null && bundle != null) {
             mConfiguration = bundle.getParcelable<Parcelable>(EXTRA_CONFIGURATION) as Configuration
         }

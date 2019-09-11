@@ -1,6 +1,6 @@
 package com.micheal.rxgallery.entity
 
-class BucketEntity {
+class BucketEntity :BaseEntity{
     var bucketId: String? = null
     var bucketName: String? = null
     var imageCount: Int = 0

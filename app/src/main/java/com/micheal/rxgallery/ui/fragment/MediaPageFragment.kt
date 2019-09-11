@@ -3,9 +3,27 @@ package com.micheal.rxgallery.ui.fragment
 import android.os.Bundle
 import android.view.View
 import androidx.viewpager.widget.ViewPager
+import com.micheal.rxgallery.Configuration
+import com.micheal.rxgallery.entity.MediaEntity
 
 class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
     View.OnClickListener{
+
+    companion object{
+        private const val EXTRA_MEDIA_LIST = "$EXTRA_PREFIX.MediaList"
+        private const val EXTRA_ITEM_CLICK_POSITION = "$EXTRA_PREFIX.ItemClickPosition"
+
+        @JvmStatic
+        fun newInstance(configuration: Configuration,list: ArrayList<MediaEntity>,position: Int) = MediaGridFragment().apply {
+            arguments = Bundle().apply {
+                putParcelable(EXTRA_CONFIGURATION,configuration)
+                putParcelableArrayList(EXTRA_MEDIA_LIST,list)
+                putInt(EXTRA_ITEM_CLICK_POSITION,position)
+            }
+        }
+    }
+
+
     override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

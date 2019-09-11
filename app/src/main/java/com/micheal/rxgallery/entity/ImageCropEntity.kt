@@ -3,7 +3,7 @@ package com.micheal.rxgallery.entity
 import android.os.Parcel
 import android.os.Parcelable
 
-class ImageCropEntity : MediaEntity, Parcelable{
+class ImageCropEntity : MediaEntity, Parcelable,BaseEntity{
     var cropPath: String? = null
     var aspectRatio = 0F
 
