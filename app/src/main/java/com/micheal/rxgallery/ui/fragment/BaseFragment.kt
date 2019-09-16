@@ -123,7 +123,9 @@ abstract class BaseFragment : Fragment() {
     }
     abstract fun getContentView(): Int
 
-    fun setTheme() {}
+    open fun setTheme(){
+
+    }
 
     private fun printFragmentLife(method: String) {
         Logger.i(String.format("Fragment:%s Method:%s", CLASS_NAME, method))

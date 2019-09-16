@@ -49,7 +49,7 @@ class FrescoImageLoader :AbsImageLoader{
         }
     }
 
-    private fun init(ctx :Context , defaultDrawable : Drawable){
+    private fun init(ctx :Context , defaultDrawable : Drawable?){
         if (draweeHolder == null){
             val resources = ctx.resources
             val hierarchy = GenericDraweeHierarchyBuilder(resources)
@@ -64,7 +64,7 @@ class FrescoImageLoader :AbsImageLoader{
         context: Context,
         path: String,
         imageView: FixImageView,
-        defaultDrawable: Drawable,
+        defaultDrawable: Drawable?,
         config: Bitmap.Config,
         resize: Boolean,
         isGif: Boolean,

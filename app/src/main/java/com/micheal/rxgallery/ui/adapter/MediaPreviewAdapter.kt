@@ -11,7 +11,7 @@ import uk.co.senab.photoview.PhotoView
 
 class MediaPreviewAdapter (private val mMediaList:List<MediaEntity>, private val mScreenWidth :Int, private val mScreenHeight:Int,
                            private val mConfiguration: Configuration, private val mPageColor:Int,
-                           private val mDefaultImage: Drawable)
+                           private val mDefaultImage: Drawable?)
     :RecyclingPagerAdapter(){
 
     override fun getView(position: Int, convertView: View?, container: ViewGroup): View {

@@ -9,7 +9,7 @@ interface AbsImageLoader {
     fun displayImage(context : Context,
                      path : String,
                      imageView : FixImageView,
-                     defaultDrawable : Drawable,
+                     defaultDrawable : Drawable?,
                      config : Bitmap.Config,
                      resize : Boolean,
                      isGif : Boolean,
