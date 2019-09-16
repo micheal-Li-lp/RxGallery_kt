@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':gallery'
 rootProject.name='RxGallery_kt'
