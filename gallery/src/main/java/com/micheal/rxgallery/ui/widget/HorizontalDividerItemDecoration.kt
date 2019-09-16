@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.view.View
 import androidx.annotation.DimenRes
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 
 class HorizontalDividerItemDecoration(builder:Builder) :FlexibleDividerDecoration(builder){
@@ -12,13 +13,75 @@ class HorizontalDividerItemDecoration(builder:Builder) :FlexibleDividerDecoratio
 
 
     override fun getDividerBound(position: Int, parent: RecyclerView?, child: View?): Rect {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        val bounds = Rect(0, 0, 0, 0)
+        val transitionX = ViewCompat.getTranslationX(child).toInt()
+        val transitionY = ViewCompat.getTranslationY(child).toInt()
+        val params = child?.layoutParams as RecyclerView.LayoutParams
+        bounds.left = parent?.paddingLeft!!.plus(mMarginProvider.dividerLeftMargin(position, parent))
+                 + transitionX
+        bounds.right = parent.width - parent.paddingRight -
+                mMarginProvider.dividerRightMargin(position, parent) + transitionX
+
+        val dividerSize :Int = getDividerSize(position, parent)
+        val isReverseLayout = isReverseLayout(parent)
+        if (mDividerType === DividerType.DRAWABLE) {
+            // set top and bottom position of divider
+            if (isReverseLayout) {
+                bounds.bottom = child.top - params.topMargin + transitionY
+                bounds.top = bounds.bottom - dividerSize
+            } else {
+                bounds.top = child.bottom + params.bottomMargin + transitionY
+                bounds.bottom = bounds.top + dividerSize
+            }
+        } else {
+            // set center point of divider
+            val halfSize = dividerSize / 2
+            if (isReverseLayout) {
+                bounds.top = child.top - params.topMargin - halfSize + transitionY
+            } else {
+                bounds.top = child.bottom + params.bottomMargin + halfSize + transitionY
+            }
+            bounds.bottom = bounds.top
+        }
+
+        if (mPositionInsideItem) {
+            if (isReverseLayout) {
+                bounds.top.plus(dividerSize)
+                bounds.bottom += dividerSize
+            } else {
+                bounds.top -= dividerSize
+                bounds.bottom -= dividerSize
+            }
+        }
+
+        return bounds
     }
 
     override fun setItemOffsets(outRect: Rect?, position: Int, parent: RecyclerView?) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (mPositionInsideItem) {
+            outRect?.set(0, 0, 0, 0)
+            return
+        }
+
+        if (isReverseLayout(parent)) {
+            outRect?.set(0, getDividerSize(position, parent!!), 0, 0)
+        } else {
+            outRect?.set(0, 0, 0, getDividerSize(position, parent!!))
+        }
+
     }
 
+    private fun getDividerSize(position: Int, parent: RecyclerView): Int {
+        when {
+            mPaintProvider != null -> return mPaintProvider.dividerPaint(position, parent).strokeWidth.toInt()
+            mSizeProvider != null -> return mSizeProvider.dividerSize(position, parent)
+            mDrawableProvider != null -> {
+                val drawable = mDrawableProvider.drawableProvider(position, parent)
+                return drawable.intrinsicHeight
+            }
+            else -> throw RuntimeException("failed to get size")
+        }
+    }
 
     /**
      * Interface for controlling divider margin

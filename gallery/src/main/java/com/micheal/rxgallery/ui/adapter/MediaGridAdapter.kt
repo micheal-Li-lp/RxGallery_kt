@@ -1,6 +1,5 @@
 package com.micheal.rxgallery.ui.adapter
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.core.content.ContextCompat
 import com.micheal.rxgallery.Configuration
@@ -18,7 +17,10 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                        private val configuration: Configuration)
     : BaseAdapter<MediaEntity>(list){
 
-    private var iMultiImageCheckedListener: IMultiImageCheckedListener? = null
+    companion object{
+        var iMultiImageCheckedListener: IMultiImageCheckedListener? = null
+    }
+
     private var mImageSize: Int = screenWidth / 3
 
     private var mDefaultImage = ThemeUtils.resolveDrawableRes(

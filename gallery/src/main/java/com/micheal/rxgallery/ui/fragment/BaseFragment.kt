@@ -81,7 +81,9 @@ abstract class BaseFragment : Fragment() {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         Logger.i("onActivityResult")
         val fragment = if (fragmentStack.isEmpty()) null else fragmentStack.pop()
         if (null != fragment) {

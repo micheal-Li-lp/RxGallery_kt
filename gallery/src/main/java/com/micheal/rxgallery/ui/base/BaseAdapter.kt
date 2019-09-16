@@ -13,7 +13,7 @@ import com.micheal.rxgallery.entity.BaseEntity
  * @desc : BaseAdapter
  */
 abstract class BaseAdapter<T : BaseEntity>(private var data: List<T>) : RecyclerView.Adapter<BaseHolder<T>>(), BaseHolder.OnViewClickListener {
-    var mOnItemClickListener: OnRecyclerViewItemClickListener<T>? = null
+    private var mOnItemClickListener: OnRecyclerViewItemClickListener<T>? = null
 
     private var mHolder: BaseHolder<T>? = null
     private var mContext: Context? = null

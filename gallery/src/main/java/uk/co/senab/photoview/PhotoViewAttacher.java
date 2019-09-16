@@ -22,7 +22,6 @@ import android.graphics.Matrix;
 import android.graphics.Matrix.ScaleToFit;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.support.v4.view.MotionEventCompat;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -35,9 +34,12 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
+import androidx.core.view.MotionEventCompat;
+
+import com.micheal.rxgallery.utils.Logger;
+
 import java.lang.ref.WeakReference;
 
-import cn.finalteam.rxgalleryfinal.utils.Logger;
 import uk.co.senab.photoview.gestures.OnGestureListener;
 import uk.co.senab.photoview.gestures.VersionedGestureDetector;
 import uk.co.senab.photoview.scrollerproxy.ScrollerProxy;

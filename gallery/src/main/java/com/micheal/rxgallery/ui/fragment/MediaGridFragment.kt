@@ -177,7 +177,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     private var mBucketId: String? = Integer.MIN_VALUE.toString()
 
-    private var mMediaActivity: MediaActivity? = null
     private var mMediaCheckChangeDisposable: Disposable? = null
     private var mCloseMediaViewPageFragmentDisposable: Disposable? = null
     private var mRequestStorageReadAccessPermissionDisposable: Disposable? = null
@@ -272,7 +271,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         mMediaBeanList = java.util.ArrayList()
         mScreenSize = DeviceUtils.getScreenSize(context!!)
         mMediaGridAdapter = MediaGridAdapter(
-            mMediaActivity!!,
+            context as MediaActivity,
             mMediaBeanList,
             mScreenSize!!.widthPixels,
             mConfiguration!!
@@ -340,10 +339,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
         subscribeEvent()
 
-        var activity: Activity? = mMediaActivity
-        if (activity == null) {
-            activity = getActivity()
-        }
+
 
         if (mConfiguration!!.image) {
             tv_folder_name.setText(R.string.gallery_all_image)
@@ -374,7 +370,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             RxBus.getDefault().toObservable(MediaCheckChangeEvent::class.java)
                 .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
                     override fun onEvent(t: MediaCheckChangeEvent) {
-                        tv_preview.isEnabled = !mMediaActivity?.mCheckedList.isNullOrEmpty()
+                        tv_preview.isEnabled = !(context as MediaActivity).mCheckedList.isNullOrEmpty()
 
                     }
                 })
@@ -403,7 +399,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                             }
                         } else {
                             if (t.success) {
-                                openCamera(mMediaActivity)
+                                openCamera(context as MediaActivity)
                             }
                         }
                     }
@@ -489,7 +485,8 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         startActivityForResult(captureIntent, TAKE_IMAGE_REQUEST_CODE)
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent) {
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         Logger.i("onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
         if (requestCode == TAKE_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
@@ -596,12 +593,12 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             }
 
             val b = PermissionCheckUtils.checkCameraPermission(
-                mMediaActivity!!,
+                context as MediaActivity,
                 requestStorageAccessPermissionTips!!,
                 MediaActivity.REQUEST_CAMERA_ACCESS_PERMISSION
             )
             if (b) {
-                openCamera(mMediaActivity)
+                openCamera(context as MediaActivity)
             }
         } else {
             if (mConfiguration!!.radio) {

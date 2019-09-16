@@ -118,6 +118,12 @@ class Configuration() :Parcelable{
         }
     }
 
+
+    fun setMaxResultSize(width: Int, height: Int) {
+        this.maxResultWidth = width
+        this.maxResultHeight = height
+    }
+
     fun getImageLoader(): AbsImageLoader {
         return when (imageLoaderType) {
             1 ->   PicassoImageLoader()
