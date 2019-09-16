@@ -200,32 +200,32 @@ object MediaUtils {
 
     @JvmStatic
     private fun parseVideoCursorAndCreateThumImage(context: Context,cursor: Cursor) :MediaEntity?{
-        val mediaBean = MediaEntity()
-        mediaBean.id = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID))
-        mediaBean.title = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE))
+        val MediaEntity = MediaEntity()
+        MediaEntity.id = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media._ID))
+        MediaEntity.title = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.TITLE))
         val originalPath = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.DATA))
-        mediaBean.originalPath = originalPath
-        mediaBean.bucketId = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID))
+        MediaEntity.originalPath = originalPath
+        MediaEntity.bucketId = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_ID))
         val bucketDisplayName =
             cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.BUCKET_DISPLAY_NAME))
-        mediaBean.bucketDisplayName = bucketDisplayName
+        MediaEntity.bucketDisplayName = bucketDisplayName
         val mimeType = cursor.getString(cursor.getColumnIndex(MediaStore.Video.Media.MIME_TYPE))
-        mediaBean.mimeType = mimeType
+        MediaEntity.mimeType = mimeType
         val createDate = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DATE_ADDED))
-        mediaBean.createDate = createDate
+        MediaEntity.createDate = createDate
         val modifiedDate =
             cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.DATE_MODIFIED))
-        mediaBean.modifiedDate = modifiedDate
+        MediaEntity.modifiedDate = modifiedDate
         val length = cursor.getLong(cursor.getColumnIndex(MediaStore.Video.Media.SIZE))
-        mediaBean.length = length
+        MediaEntity.length = length
 
         //创建缩略图文件
-        mediaBean.thumbnailBigPath = createThumbnailBigFileName(
+        MediaEntity.thumbnailBigPath = createThumbnailBigFileName(
             context,
             originalPath
         ).absolutePath
 
-        mediaBean.thumbnailSmallPath = createThumbnailSmallFileName(
+        MediaEntity.thumbnailSmallPath = createThumbnailSmallFileName(
             context,
             originalPath
         ).absolutePath
@@ -246,14 +246,14 @@ object MediaUtils {
             }
 
         }
-        mediaBean.width=width
-        mediaBean.height=height
+        MediaEntity.width=width
+        MediaEntity.height=height
 
         val latitude = cursor.getDouble(cursor.getColumnIndex(MediaStore.Video.Media.LATITUDE))
-        mediaBean.latitude = latitude
+        MediaEntity.latitude = latitude
         val longitude = cursor.getDouble(cursor.getColumnIndex(MediaStore.Video.Media.LONGITUDE))
-        mediaBean.longitude = longitude
-        return mediaBean
+        MediaEntity.longitude = longitude
+        return MediaEntity
     }
 
 
@@ -375,6 +375,85 @@ object MediaUtils {
             cursor.close()
         }
         return bucketBeenList
+    }
+
+
+    /**
+     * 根据原图获取图片相关信息
+     */
+    fun getMediaEntityWithImage(context: Context, originalPath: String): MediaEntity? {
+        val contentResolver = context.contentResolver
+        val projection = ArrayList<String>()
+        projection.add(MediaStore.Images.Media._ID)
+        projection.add(MediaStore.Images.Media.TITLE)
+        projection.add(MediaStore.Images.Media.DATA)
+        projection.add(MediaStore.Images.Media.BUCKET_ID)
+        projection.add(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+        projection.add(MediaStore.Images.Media.MIME_TYPE)
+        projection.add(MediaStore.Images.Media.DATE_ADDED)
+        projection.add(MediaStore.Images.Media.DATE_MODIFIED)
+        projection.add(MediaStore.Images.Media.LATITUDE)
+        projection.add(MediaStore.Images.Media.LONGITUDE)
+        projection.add(MediaStore.Images.Media.ORIENTATION)
+        projection.add(MediaStore.Images.Media.SIZE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            projection.add(MediaStore.Images.Media.WIDTH)
+            projection.add(MediaStore.Images.Media.HEIGHT)
+        }
+        val cursor = contentResolver.query(
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            projection.toTypedArray(),
+            MediaStore.Images.Media.DATA + "=?",
+            arrayOf(originalPath),
+            null
+        )
+        var MediaEntity: MediaEntity? = null
+        if (cursor != null && cursor.count > 0) {
+            cursor.moveToFirst()
+            MediaEntity = parseImageCursorAndCreateThumImage(context, cursor)
+        }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+        return MediaEntity
+    }
+
+    /**
+     * 根据地址获取视频相关信息
+     */
+    fun getMediaEntityWithVideo(context: Context, originalPath: String): MediaEntity? {
+        val contentResolver = context.contentResolver
+        val projection = ArrayList<String>()
+        projection.add(MediaStore.Video.Media._ID)
+        projection.add(MediaStore.Video.Media.TITLE)
+        projection.add(MediaStore.Video.Media.DATA)
+        projection.add(MediaStore.Video.Media.BUCKET_ID)
+        projection.add(MediaStore.Video.Media.BUCKET_DISPLAY_NAME)
+        projection.add(MediaStore.Video.Media.MIME_TYPE)
+        projection.add(MediaStore.Video.Media.DATE_ADDED)
+        projection.add(MediaStore.Video.Media.DATE_MODIFIED)
+        projection.add(MediaStore.Video.Media.LATITUDE)
+        projection.add(MediaStore.Video.Media.LONGITUDE)
+        projection.add(MediaStore.Video.Media.SIZE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            projection.add(MediaStore.Video.Media.WIDTH)
+            projection.add(MediaStore.Video.Media.HEIGHT)
+        }
+        val cursor = contentResolver.query(
+            MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+            projection.toTypedArray(),
+            MediaStore.Images.Media.DATA + "=?",
+            arrayOf(originalPath), null
+        )
+        var MediaEntity: MediaEntity? = null
+        if (cursor != null && cursor.count > 0) {
+            cursor.moveToFirst()
+            MediaEntity = parseVideoCursorAndCreateThumImage(context, cursor)
+        }
+        if (cursor != null && !cursor.isClosed) {
+            cursor.close()
+        }
+        return MediaEntity
     }
 
 }

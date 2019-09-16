@@ -33,7 +33,10 @@ class BucketAdapter(private val list: List<BucketEntity> ,private val configurat
     override fun onViewClick(view: View, position: Int) {
 
     }
-
+    fun setSelectedBucket(bucketBean: BucketEntity) {
+        this.mSelectedBucket = bucketBean
+        notifyDataSetChanged()
+    }
 
     inner class BucketViewHolder(view: View) : BaseHolder<BucketEntity>(view)
         ,View.OnClickListener{

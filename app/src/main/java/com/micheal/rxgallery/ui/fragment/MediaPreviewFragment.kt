@@ -12,7 +12,7 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
         private const val EXTRA_PAGE_INDEX = "$EXTRA_PREFIX.PageIndex"
 
         @JvmStatic
-        fun newInstance(configuration: Configuration,position: Int) = MediaPreviewFragment().apply {
+        fun newInstance(configuration: Configuration?,position: Int) = MediaPreviewFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(EXTRA_CONFIGURATION,configuration)
                 putInt(EXTRA_PAGE_INDEX,position)

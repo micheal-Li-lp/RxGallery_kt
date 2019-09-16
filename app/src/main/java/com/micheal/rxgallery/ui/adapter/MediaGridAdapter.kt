@@ -71,7 +71,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
     }
 
     override fun onViewClick(view: View, position: Int) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
     }
 
 

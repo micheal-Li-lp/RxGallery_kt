@@ -14,10 +14,12 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
         private const val EXTRA_ITEM_CLICK_POSITION = "$EXTRA_PREFIX.ItemClickPosition"
 
         @JvmStatic
-        fun newInstance(configuration: Configuration,list: ArrayList<MediaEntity>,position: Int) = MediaGridFragment().apply {
+        fun newInstance(configuration: Configuration?,list: List<MediaEntity>,position: Int) = MediaPageFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(EXTRA_CONFIGURATION,configuration)
-                putParcelableArrayList(EXTRA_MEDIA_LIST,list)
+                putParcelableArrayList(EXTRA_MEDIA_LIST, arrayListOf<MediaEntity>().apply {
+                    addAll(list)
+                })
                 putInt(EXTRA_ITEM_CLICK_POSITION,position)
             }
         }
