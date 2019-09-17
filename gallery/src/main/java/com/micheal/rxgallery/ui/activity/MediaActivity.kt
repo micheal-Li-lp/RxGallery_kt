@@ -28,7 +28,7 @@ import com.micheal.rxgallery.view.ActivityFragmentView
 import kotlinx.android.synthetic.main.gallery_activity_media.*
 import java.util.ArrayList
 
-class MediaActivity :BaseActivity(),ActivityFragmentView{
+class MediaActivity : BaseActivity() , ActivityFragmentView{
     companion object{
         const val REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101
         const val REQUEST_STORAGE_WRITE_ACCESS_PERMISSION = 102
@@ -97,7 +97,7 @@ class MediaActivity :BaseActivity(),ActivityFragmentView{
     }
 
     override fun findViews() {
-
+        toolbar.title = ""
     }
 
     override fun setTheme() {

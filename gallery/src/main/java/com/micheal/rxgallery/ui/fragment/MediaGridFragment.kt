@@ -50,6 +50,8 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.gallery_fragment_media_grid.*
+import kotlinx.android.synthetic.main.gallery_fragment_media_grid.rl_root_view
+import kotlinx.android.synthetic.main.gallery_fragment_media_preview.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -62,7 +64,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         //接口-单选-是否裁剪
         var iListenerRadio: IRadioImageCheckedListener? = null
 
-        private val IMAGE_TYPE = "image/jpeg"
+        private const val IMAGE_TYPE = "image/jpeg"
         //预留公开命名接口
         private var mImageStoreDir: File? = null
         private var mImageStoreCropDir: File? = null //裁剪目录
@@ -197,10 +199,11 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     override fun onRequestMediaCallback(list: List<MediaEntity>?) {
         if (!mConfiguration!!.hideCamera) {
             if (mPage == 1 && TextUtils.equals(mBucketId, Integer.MIN_VALUE.toString())) {
-                val takePhotoBean = MediaEntity()
-                takePhotoBean.id = Integer.MIN_VALUE.toLong()
-                takePhotoBean.bucketId = Integer.MIN_VALUE.toString()
-                mMediaBeanList.add(takePhotoBean)
+                MediaEntity().run {
+                    id = Integer.MIN_VALUE.toLong()
+                    bucketId = Integer.MIN_VALUE.toString()
+                    mMediaBeanList.add(this)
+                }
             }
         }
         if (!list.isNullOrEmpty()) {
@@ -222,12 +225,13 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
 
         if (mMediaBeanList.isNullOrEmpty()) {
-            val mediaEmptyTils = ThemeUtils.resolveString(
+            ThemeUtils.resolveString(
                 context,
                 R.attr.gallery_media_empty_tips,
                 R.string.gallery_default_media_empty_tips
-            )
-            EmptyViewUtils.showMessage(ll_empty_view, mediaEmptyTils)
+            ).run {
+                EmptyViewUtils.showMessage(ll_empty_view, this)
+            }
         }
 
         rv_media.onLoadMoreComplete()
@@ -526,7 +530,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         if (iListenerRadio == null) {
             activity?.finish()
         } else {
-            val flag = iListenerRadio?.isActivityFinished()
+            val flag = iListenerRadio?.isActivityFinish()
             Logger.i("# crop image is flag # :$flag")
             if (flag==null||flag)
                 activity?.finish()

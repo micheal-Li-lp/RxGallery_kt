@@ -51,6 +51,8 @@ abstract class BaseAdapter<T : BaseEntity>(private var data: List<T>) : Recycler
     /**提供用于 item 布局的 layoutId */
     abstract fun getLayoutId(viewType: Int): Int
 
+    abstract fun getItemViewType() :Int
+
     /**设置点击监听*/
     fun setOnItemClickListener(listener: OnRecyclerViewItemClickListener<T>) {
         this.mOnItemClickListener = listener

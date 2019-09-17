@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
 
                             @Override
-                            public boolean isActivityFinished() {
+                            public boolean isActivityFinish() {
                                 return false;
                             }
                         });
@@ -480,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                     }
 
                                     @Override
-                                    public boolean isActivityFinished() {
+                                    public boolean isActivityFinish() {
                                         Logger.i("返回false不关闭，返回true则为关闭");
                                         return true;
                                     }

@@ -10,5 +10,5 @@ interface IRadioImageCheckedListener {
     /**
      * 返回true则关闭，false默认不关闭
      */
-    fun isActivityFinished():Boolean
+    fun isActivityFinish():Boolean
 }

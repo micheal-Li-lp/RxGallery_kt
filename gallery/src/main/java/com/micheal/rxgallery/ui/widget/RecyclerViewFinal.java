@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import com.micheal.rxgallery.R;
+import com.micheal.rxgallery.ui.base.BaseAdapter;
 
 
 /**
@@ -99,7 +100,7 @@ public class RecyclerViewFinal extends RecyclerView {
         }
 
         adapter.registerAdapterDataObserver(mDataObserver);
-        mFooterViewAdapter = new FooterAdapter(adapter, mFooterView);
+        mFooterViewAdapter = new FooterAdapter((BaseAdapter) adapter, mFooterView);
 
         if (getLayoutManager() != null) {
             GridLayoutManager manager = (GridLayoutManager) getLayoutManager();

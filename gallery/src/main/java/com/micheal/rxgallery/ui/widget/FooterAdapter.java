@@ -5,6 +5,9 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.micheal.rxgallery.ui.base.BaseAdapter;
+import com.micheal.rxgallery.ui.base.BaseHolder;
+
 
 /**
  * Desction:footer适配器
@@ -15,11 +18,11 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int ITEM_VIEW_TYPE_FOOTER = 0;
     private static final int ITEM_VIEW_TYPE_ITEM = 1;
 
-    private final RecyclerView.Adapter mAdapter;
+    private final BaseAdapter mAdapter;
     private final View mFooterView;
     private OnItemClickListener mOnItemClickListener;
 
-    public FooterAdapter(RecyclerView.Adapter adapter, View footerView) {
+    public FooterAdapter(BaseAdapter adapter, View footerView) {
         this.mAdapter = adapter;
         this.mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -36,7 +39,7 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewType == ITEM_VIEW_TYPE_FOOTER) {
             return new FooterViewHolder(mFooterView);
         }
-        return mAdapter.onCreateViewHolder(parent, viewType);
+        return mAdapter.onCreateViewHolder(parent, mAdapter.getItemViewType());
     }
 
     @Override
@@ -45,7 +48,7 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(v -> mOnItemClickListener.onItemClick(holder, position));
             }
-            mAdapter.onBindViewHolder(holder, position);
+            mAdapter.onBindViewHolder((BaseHolder) holder, position);
         }
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.annotation.IntRange
 import com.micheal.rxgallery.entity.MediaEntity
 import com.micheal.rxgallery.imageloader.*
 import com.yalantis.ucrop.model.AspectRatio
@@ -51,31 +52,31 @@ class Configuration() :Parcelable{
      var maxResultHeight: Int = 0
 
     
-    constructor(`in`: Parcel) : this() {
-        image = `in`.readByte().toInt() != 0
-        selectedList = `in`.createTypedArrayList(MediaEntity.CREATOR)
-        radio = `in`.readByte().toInt() != 0
-        crop = `in`.readByte().toInt() != 0
-        maxSize = `in`.readInt()
-        hideBottomControls = `in`.readByte().toInt() != 0
-        compressionQuality = `in`.readInt()
-        gestures = `in`.createIntArray()
-        maxBitmapSize = `in`.readInt()
-        maxScaleMultiplier = `in`.readFloat()
-        aspectRatioX = `in`.readFloat()
-        aspectRatioY = `in`.readFloat()
-        selectedByDefault = `in`.readInt()
-        aspectRatio = `in`.createTypedArray(AspectRatio.CREATOR)
-        freestyleCropEnabled = `in`.readByte().toInt() != 0
-        ovalDimmedLayer = `in`.readByte().toInt() != 0
-        maxResultWidth = `in`.readInt()
-        maxResultHeight = `in`.readInt()
-        imageLoaderType = `in`.readInt()
-        imageConfig = `in`.readInt()
-        hideCamera = `in`.readByte().toInt() != 0
-        isPlayGif = `in`.readByte().toInt() != 0
-        hidePreview = `in`.readByte().toInt() != 0
-        isVideoPreview = `in`.readByte().toInt() != 0
+    constructor(parcel: Parcel) : this() {
+        image = parcel.readByte().toInt() != 0
+        selectedList = parcel.createTypedArrayList(MediaEntity.CREATOR)
+        radio = parcel.readByte().toInt() != 0
+        crop = parcel.readByte().toInt() != 0
+        maxSize = parcel.readInt()
+        hideBottomControls = parcel.readByte().toInt() != 0
+        compressionQuality = parcel.readInt()
+        gestures = parcel.createIntArray()
+        maxBitmapSize = parcel.readInt()
+        maxScaleMultiplier = parcel.readFloat()
+        aspectRatioX = parcel.readFloat()
+        aspectRatioY = parcel.readFloat()
+        selectedByDefault = parcel.readInt()
+        aspectRatio = parcel.createTypedArray(AspectRatio.CREATOR)
+        freestyleCropEnabled = parcel.readByte().toInt() != 0
+        ovalDimmedLayer = parcel.readByte().toInt() != 0
+        maxResultWidth = parcel.readInt()
+        maxResultHeight = parcel.readInt()
+        imageLoaderType = parcel.readInt()
+        imageConfig = parcel.readInt()
+        hideCamera = parcel.readByte().toInt() != 0
+        isPlayGif = parcel.readByte().toInt() != 0
+        hidePreview = parcel.readByte().toInt() != 0
+        isVideoPreview = parcel.readByte().toInt() != 0
 
     }
 
@@ -119,7 +120,7 @@ class Configuration() :Parcelable{
     }
 
 
-    fun setMaxResultSize(width: Int, height: Int) {
+    fun setMaxResultSize(@IntRange(from=100) width: Int,@IntRange(from=100) height: Int) {
         this.maxResultWidth = width
         this.maxResultHeight = height
     }

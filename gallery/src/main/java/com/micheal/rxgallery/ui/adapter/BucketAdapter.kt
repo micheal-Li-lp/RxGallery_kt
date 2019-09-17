@@ -36,6 +36,10 @@ class BucketAdapter(private val list: List<BucketEntity> ,private val configurat
         notifyDataSetChanged()
     }
 
+    override fun getItemViewType(): Int {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     fun setOnItemClickListener(listener:((view:View, position:Int, entity:BucketEntity)->Unit)?){
         this.itemClickListener=listener
     }
