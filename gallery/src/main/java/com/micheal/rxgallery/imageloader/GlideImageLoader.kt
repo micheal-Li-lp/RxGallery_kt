@@ -9,6 +9,7 @@ import com.micheal.rxgallery.imageloader.rotate.RotateTransformation
 import com.micheal.rxgallery.ui.widget.FixImageView
 
 class GlideImageLoader :AbsImageLoader{
+
     override fun displayImage(
         context: Context,
         path: String,
@@ -21,6 +22,7 @@ class GlideImageLoader :AbsImageLoader{
         height: Int,
         rotate: Int
     ) {
+
         if (isGif) {
             Glide
                 .with(context)
@@ -44,5 +46,7 @@ class GlideImageLoader :AbsImageLoader{
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .into(imageView)
         }
+
     }
+
 }

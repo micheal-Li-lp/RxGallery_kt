@@ -34,7 +34,7 @@ class MediaPreviewAdapter (private val mMediaList:List<MediaEntity>, private val
         mConfiguration.getImageLoader().displayImage(
             container.context,
             path!!,
-            ivImage!!,
+            ivImage,
             mDefaultImage,
             mConfiguration.getImageConfig1(),
             false,

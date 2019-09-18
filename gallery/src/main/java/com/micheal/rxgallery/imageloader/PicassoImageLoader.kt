@@ -9,6 +9,9 @@ import com.squareup.picasso.Picasso
 import java.io.File
 
 class PicassoImageLoader : AbsImageLoader{
+
+
+
     override fun displayImage(
         context: Context,
         path: String,
@@ -21,6 +24,7 @@ class PicassoImageLoader : AbsImageLoader{
         height: Int,
         rotate: Int
     ) {
+
         var creator = Picasso.with(context)
             .load(File(path))
             .placeholder(defaultDrawable)
@@ -35,5 +39,7 @@ class PicassoImageLoader : AbsImageLoader{
             creator = creator.resize(width,height).centerCrop()
         }
         creator.into(imageView)
+
     }
+
 }

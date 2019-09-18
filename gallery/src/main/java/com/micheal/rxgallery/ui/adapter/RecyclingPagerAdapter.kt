@@ -69,9 +69,7 @@ abstract class RecyclingPagerAdapter(private val recycleBin: RecycleBin) :PagerA
      *
      * @return The number of types of Views that will be created by this adapter
      */
-    private fun getViewTypeCount(): Int {
-        return 1
-    }
+    private fun getViewTypeCount() = 1
 
     /**
      * Get the type of View that will be created by [.getView] for the specified item.
@@ -85,9 +83,7 @@ abstract class RecyclingPagerAdapter(private val recycleBin: RecycleBin) :PagerA
      * @see .IGNORE_ITEM_VIEW_TYPE
      */
     private// Argument potentially used by subclasses.
-    fun getItemViewType(position: Int): Int {
-        return 0
-    }
+    fun getItemViewType(position: Int) = 0
 
     /**
      * Get a View that displays the data at the specified position in the data set. You can either

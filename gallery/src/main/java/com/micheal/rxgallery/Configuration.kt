@@ -110,13 +110,9 @@ class Configuration() :Parcelable{
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<Configuration> {
-        override fun createFromParcel(parcel: Parcel): Configuration {
-            return Configuration(parcel)
-        }
+        override fun createFromParcel(parcel: Parcel) = Configuration(parcel)
 
-        override fun newArray(size: Int): Array<Configuration?> {
-            return arrayOfNulls(size)
-        }
+        override fun newArray(size: Int): Array<Configuration?> = arrayOfNulls(size)
     }
 
 
@@ -127,23 +123,20 @@ class Configuration() :Parcelable{
 
     fun getImageLoader(): AbsImageLoader {
         return when (imageLoaderType) {
-            1 ->   PicassoImageLoader()
-            2 ->   GlideImageLoader()
-            3 ->   FrescoImageLoader()
+            1 -> PicassoImageLoader()
+            2 -> GlideImageLoader()
+            3 -> FrescoImageLoader()
             4 -> UniversalImageLoader()
-            5 ->  PicassoImageLoader()
-            else ->  PicassoImageLoader()
+            else -> PicassoImageLoader()
         }
     }
 
 
-    fun getImageConfig1(): Bitmap.Config {
-        when (imageConfig) {
-            1 -> return Bitmap.Config.ALPHA_8
-            2 -> return Bitmap.Config.ARGB_4444
-            3 -> return Bitmap.Config.ARGB_8888
-            4 -> return Bitmap.Config.RGB_565
-        }
-        return Bitmap.Config.ARGB_8888
+    fun getImageConfig1() = when (imageConfig) {
+        1 -> Bitmap.Config.ALPHA_8
+        2 -> Bitmap.Config.ARGB_4444
+        3 -> Bitmap.Config.ARGB_8888
+        4 -> Bitmap.Config.RGB_565
+        else -> Bitmap.Config.ARGB_8888
     }
 }

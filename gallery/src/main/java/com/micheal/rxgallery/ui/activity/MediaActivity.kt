@@ -161,12 +161,13 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             gravity
         )
 
-        val toolbarBg = ThemeUtils.resolveColor(
+        ThemeUtils.resolveColor(
             this,
             R.attr.gallery_toolbar_bg,
             R.color.gallery_default_color_toolbar_bg
-        )
-        toolbar.setBackgroundColor(toolbarBg)
+        ).run {
+            toolbar.setBackgroundColor(this)
+        }
 
         ThemeUtils.resolveDimen(
             this,
@@ -176,38 +177,38 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             toolbar.minimumHeight = this
         }
 
-        val statusBarColor = ThemeUtils.resolveColor(
+        ThemeUtils.resolveColor(
             this,
             R.attr.gallery_color_statusbar,
             R.color.gallery_default_color_statusbar
-        )
-        ThemeUtils.setStatusBarColor(statusBarColor, window)
+        ).run {
+            ThemeUtils.setStatusBarColor(this, window)
+        }
 
-        val dividerHeight = ThemeUtils.resolveDimen(
-            this,
-            R.attr.gallery_toolbar_divider_height,
-            R.dimen.gallery_default_toolbar_divider_height
-        ).toInt()
-        val dividerBottomMargin = ThemeUtils.resolveDimen(
-            this,
-            R.attr.gallery_toolbar_bottom_margin,
-            R.dimen.gallery_default_toolbar_bottom_margin
-        ).toInt()
-        val dividerLP =
-            LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, dividerHeight)
-        dividerLP.bottomMargin = dividerBottomMargin
-        toolbar_divider.layoutParams = dividerLP
+        LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+            ThemeUtils.resolveDimen(this,
+                R.attr.gallery_toolbar_divider_height,
+                R.dimen.gallery_default_toolbar_divider_height
+            ).toInt()
+        ).run {
+            bottomMargin = ThemeUtils.resolveDimen(
+                this@MediaActivity,
+                R.attr.gallery_toolbar_bottom_margin,
+                R.dimen.gallery_default_toolbar_bottom_margin
+            ).toInt()
+            toolbar_divider.layoutParams = this
+        }
 
-        val dividerDrawable = ThemeUtils.resolveDrawable(
+        ThemeUtils.resolveDrawable(
             this,
             R.attr.gallery_toolbar_divider_bg,
             R.color.gallery_default_toolbar_divider_bg
-        )
-        OsCompat.setBackgroundDrawableCompat(toolbar_divider, dividerDrawable)
+        ).run {
+            OsCompat.setBackgroundDrawableCompat(toolbar_divider, this)
+        }
 
         setSupportActionBar(toolbar)
     }
-
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -444,7 +445,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Logger.i("onRequestPermissionsResult:requestCode=" + requestCode + " permissions=" + permissions[0])
+        Logger.i("onRequestPermissionsResult:requestCode=$requestCode permissions=${permissions[0]}" )
         when (requestCode) {
             REQUEST_STORAGE_READ_ACCESS_PERMISSION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 RxBus.getDefault().post(
