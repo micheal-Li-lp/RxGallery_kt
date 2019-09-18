@@ -9,7 +9,6 @@ import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
 class RotateTransformation(context: Context,private val rotateRotationAngle :Float)
     : BitmapTransformation(context) {
 
-
     override fun getId() = "rotate$rotateRotationAngle"
 
     override fun transform(

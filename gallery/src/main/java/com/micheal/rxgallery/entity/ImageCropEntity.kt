@@ -36,8 +36,10 @@ class ImageCropEntity : MediaEntity, Parcelable,BaseEntity{
     override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<ImageCropEntity> {
+
         override fun createFromParcel(parcel: Parcel) = ImageCropEntity(parcel)
 
         override fun newArray(size: Int) = arrayOfNulls<ImageCropEntity>(size)
+
     }
 }

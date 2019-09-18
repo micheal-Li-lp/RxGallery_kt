@@ -28,7 +28,7 @@ open class MediaEntity() : Parcelable,BaseEntity{
     //图片方向
     var orientation: Int = 0
     //文件大小
-    var length: Long = 0
+    var length: Long = 0L
     //文件夹相关
     var bucketId: String? = null
     var bucketDisplayName: String? = null
@@ -49,23 +49,23 @@ open class MediaEntity() : Parcelable,BaseEntity{
             return ""
         }
 
-    constructor(`in`: Parcel) : this() {
-        id = `in`.readLong()
-        title = `in`.readString()
-        originalPath = `in`.readString()
-        createDate = `in`.readLong()
-        modifiedDate = `in`.readLong()
-        mimeType = `in`.readString()
-        bucketId = `in`.readString()
-        bucketDisplayName = `in`.readString()
-        thumbnailBigPath = `in`.readString()
-        thumbnailSmallPath = `in`.readString()
-        width = `in`.readInt()
-        height = `in`.readInt()
-        latitude = `in`.readDouble()
-        longitude = `in`.readDouble()
-        orientation = `in`.readInt()
-        length = `in`.readLong()
+    constructor(parcel: Parcel) : this() {
+        id = parcel.readLong()
+        title = parcel.readString()
+        originalPath = parcel.readString()
+        createDate = parcel.readLong()
+        modifiedDate = parcel.readLong()
+        mimeType = parcel.readString()
+        bucketId = parcel.readString()
+        bucketDisplayName = parcel.readString()
+        thumbnailBigPath = parcel.readString()
+        thumbnailSmallPath = parcel.readString()
+        width = parcel.readInt()
+        height = parcel.readInt()
+        latitude = parcel.readDouble()
+        longitude = parcel.readDouble()
+        orientation = parcel.readInt()
+        length = parcel.readLong()
     }
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
@@ -87,18 +87,12 @@ open class MediaEntity() : Parcelable,BaseEntity{
         dest.writeLong(length)
     }
 
-    override fun describeContents(): Int {
-        return 0
-    }
+    override fun describeContents() = 0
 
     companion object CREATOR : Parcelable.Creator<MediaEntity> {
-        override fun createFromParcel(parcel: Parcel): MediaEntity {
-            return MediaEntity(parcel)
-        }
+        override fun createFromParcel(parcel: Parcel) = MediaEntity(parcel)
 
-        override fun newArray(size: Int): Array<MediaEntity?> {
-            return arrayOfNulls(size)
-        }
+        override fun newArray(size: Int) = arrayOfNulls<MediaEntity>(size)
     }
 
     override fun equals(other: Any?): Boolean {
@@ -111,29 +105,25 @@ open class MediaEntity() : Parcelable,BaseEntity{
 
     }
 
-    override fun hashCode(): Int {
-        return this.id.toInt()
-    }
+    override fun hashCode() = this.id.toInt()
 
-    override fun toString(): String {
-        return "MediaBean{" +
-                "id=" + id +
-                ", title='" + title + '\''.toString() +
-                ", originalPath='" + originalPath + '\''.toString() +
-                ", createDate=" + createDate +
-                ", modifiedDate=" + modifiedDate +
-                ", mimeType='" + mimeType + '\''.toString() +
-                ", width=" + width +
-                ", height=" + height +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                ", orientation=" + orientation +
-                ", length=" + length +
-                ", bucketId='" + bucketId + '\''.toString() +
-                ", bucketDisplayName='" + bucketDisplayName + '\''.toString() +
-                ", thumbnailBigPath='" + thumbnailBigPath + '\''.toString() +
-                ", thumbnailSmallPath='" + thumbnailSmallPath + '\''.toString() +
-                '}'.toString()
-    }
+    override fun toString() = "MediaBean{" +
+            "id=" + id +
+            ", title='" + title + '\''.toString() +
+            ", originalPath='" + originalPath + '\''.toString() +
+            ", createDate=" + createDate +
+            ", modifiedDate=" + modifiedDate +
+            ", mimeType='" + mimeType + '\''.toString() +
+            ", width=" + width +
+            ", height=" + height +
+            ", latitude=" + latitude +
+            ", longitude=" + longitude +
+            ", orientation=" + orientation +
+            ", length=" + length +
+            ", bucketId='" + bucketId + '\''.toString() +
+            ", bucketDisplayName='" + bucketDisplayName + '\''.toString() +
+            ", thumbnailBigPath='" + thumbnailBigPath + '\''.toString() +
+            ", thumbnailSmallPath='" + thumbnailSmallPath + '\''.toString() +
+            '}'.toString()
 
 }

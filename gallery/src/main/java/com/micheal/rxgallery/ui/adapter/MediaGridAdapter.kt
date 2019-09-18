@@ -17,7 +17,6 @@ import com.micheal.rxgallery.ui.activity.MediaActivity
 import com.micheal.rxgallery.ui.base.BaseAdapter
 import com.micheal.rxgallery.ui.base.BaseHolder
 import com.micheal.rxgallery.ui.base.IMultiImageCheckedListener
-import com.micheal.rxgallery.ui.widget.SquareImageView
 import com.micheal.rxgallery.ui.widget.SquareLinearLayout
 import com.micheal.rxgallery.utils.Logger
 import com.micheal.rxgallery.utils.OsCompat
@@ -93,7 +92,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
 
             if (data.id == Integer.MIN_VALUE.toLong()) {
                 findViewById<AppCompatCheckBox>(R.id.cb_check).visibility = View.GONE
-                findViewById<SquareImageView>(R.id.iv_media_image).visibility = View.GONE
+                findViewById<View>(R.id.iv_media_image).visibility = View.GONE
                 findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.VISIBLE
                 findViewById<ImageView>(R.id.iv_camera_image).setImageDrawable(mCameraImage)
                 findViewById<TextView>(R.id.tv_camera_txt).run {
@@ -154,7 +153,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                     }
                 }
 
-                findViewById<SquareImageView>(R.id.iv_media_image).visibility = View.VISIBLE
+                findViewById<View>(R.id.iv_media_image).visibility = View.VISIBLE
                 findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.GONE
                 findViewById<AppCompatCheckBox>(R.id.cb_check).isChecked = mMediaActivity.mCheckedList.contains(
                     data
