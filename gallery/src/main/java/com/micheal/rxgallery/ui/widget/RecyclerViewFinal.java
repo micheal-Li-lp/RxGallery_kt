@@ -100,7 +100,7 @@ public class RecyclerViewFinal extends RecyclerView {
         }
 
         adapter.registerAdapterDataObserver(mDataObserver);
-        mFooterViewAdapter = new FooterAdapter((BaseAdapter) adapter, mFooterView);
+        mFooterViewAdapter = new FooterAdapter(adapter, mFooterView);
 
         if (getLayoutManager() != null) {
             GridLayoutManager manager = (GridLayoutManager) getLayoutManager();

@@ -33,15 +33,10 @@ abstract class BaseAdapter<T : BaseEntity>(private var data: List<T>) : Recycler
     }
 
     /**返回数据个数*/
-    override fun getItemCount(): Int {
-        return data.size
-    }
+    override fun getItemCount() = data.size
 
     /**获得某个 position 上的 item 的数据*/
-    fun getItem(position: Int): T? {
-        return data[position]
-    }
-
+    fun getItem(position: Int) = data[position]
     /**获得 data 的数据*/
     abstract fun getData(): List<T>
 

@@ -24,7 +24,7 @@ class RxGalleryListener {
      * 图片多选的事件
      */
     fun setMultiImageCheckedListener(checkedImageListener: IMultiImageCheckedListener) {
-        MediaGridAdapter.iMultiImageCheckedListener = checkedImageListener
+        MediaGridAdapter.iMultiImageCheckedListener=checkedImageListener
     }
 
 

@@ -51,7 +51,6 @@ import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.gallery_fragment_media_grid.*
 import kotlinx.android.synthetic.main.gallery_fragment_media_grid.rl_root_view
-import kotlinx.android.synthetic.main.gallery_fragment_media_preview.*
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -121,7 +120,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
          * @return 裁剪存储路径
          */
         @JvmStatic
-        fun  getImageStoreCropDirByFile()=mImageStoreCropDir
+        fun  getImageStoreCropDirByFile() = mImageStoreCropDir
 
         /**
          * getImageStoreDir
@@ -129,7 +128,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
          * @return 存储路径
          */
         @JvmStatic
-        fun  getImageStoreCropDirByStr()=mImageStoreCropDir?.path
+        fun  getImageStoreCropDirByStr() = mImageStoreCropDir?.path
 
         /**
          * 设置裁剪路径
@@ -139,7 +138,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             mImageStoreCropDir = imgFile
             Logger.i("设置图片裁剪保存路径为：${mImageStoreCropDir?.absolutePath}" )
         }
-
 
         /**
          * 设置裁剪路径
@@ -166,14 +164,14 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
     }
 
-    var mMediaGridPresenter: MediaGridPresenterImpl?=null
+    lateinit var mMediaGridPresenter: MediaGridPresenterImpl
     var mScreenSize: DisplayMetrics?=null
-    private var mMediaBeanList  = ArrayList<MediaEntity>()
-    private var mMediaGridAdapter: MediaGridAdapter? = null
+    private var mMediaEntityList  = ArrayList<MediaEntity>()
+    private lateinit var mMediaGridAdapter: MediaGridAdapter
     private var mBucketAdapter: BucketAdapter? = null
-    private var mBucketBeanList  = ArrayList<BucketEntity>()
+    private var mBucketEntityList  = ArrayList<BucketEntity>()
     //扫描
-    private var mMediaScanner: MediaScanner? = null
+    private lateinit var mMediaScanner: MediaScanner
     private var mPage = 1
     private var mImagePath: String? = null
 
@@ -181,7 +179,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     private var mMediaCheckChangeDisposable: Disposable? = null
     private var mCloseMediaViewPageFragmentDisposable: Disposable? = null
-    private var mRequestStorageReadAccessPermissionDisposable: Disposable? = null
 
     private var slideInUnderneathAnimation: SlideInUnderneathAnimation? = null
     private var slideOutUnderneathAnimation: SlideOutUnderneathAnimation? = null
@@ -194,119 +191,81 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     private var requestStorageAccessPermissionTips: String? = null
 
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mMediaScanner = MediaScanner(context)
+    }
+
     override fun getContentView() = R.layout.gallery_fragment_media_grid
 
-    override fun onRequestMediaCallback(list: List<MediaEntity>?) {
-        if (!mConfiguration!!.hideCamera) {
-            if (mPage == 1 && TextUtils.equals(mBucketId, Integer.MIN_VALUE.toString())) {
-                MediaEntity().run {
-                    id = Integer.MIN_VALUE.toLong()
-                    bucketId = Integer.MIN_VALUE.toString()
-                    mMediaBeanList.add(this)
+    override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
+        rv_media.run {
+            setEmptyView(ll_empty_view)
+            addItemDecoration(MarginDecoration(context!!))
+            GridLayoutManager(context, 3).run {
+                orientation = GridLayoutManager.VERTICAL
+                layoutManager=this
+            }
+            setOnLoadMoreListener(this@MediaGridFragment)
+            setFooterViewHide(true)
+        }
+
+        tv_folder_name.setOnClickListener(this)
+        tv_preview.run {
+            setOnClickListener(this@MediaGridFragment)
+            isEnabled = false
+            visibility = if (mConfiguration!!.radio) {
+                view.findViewById<View>(R.id.tv_preview_vr).visibility = View.GONE
+                View.GONE
+            } else {
+                if (mConfiguration!!.hidePreview) {
+                    view.findViewById<View>(R.id.tv_preview_vr).visibility = View.GONE
+                    View.GONE
+                } else {
+                    view.findViewById<View>(R.id.tv_preview_vr).visibility = View.VISIBLE
+                    View.VISIBLE
                 }
             }
         }
-        if (!list.isNullOrEmpty()) {
-            mMediaBeanList.addAll(list)
-            Logger.i(String.format("得到:%s张图片", list.size))
-        } else {
-            Logger.i("没有更多图片")
-        }
-        mMediaGridAdapter?.notifyDataSetChanged()
 
-        mPage++
-
-        if (list == null || list.size < LIMIT) {
-            rv_media.setFooterViewHide(true)
-            rv_media.setHasLoadMore(false)
-        } else {
-            rv_media.setFooterViewHide(false)
-            rv_media.setHasLoadMore(true)
-        }
-
-        if (mMediaBeanList.isNullOrEmpty()) {
-            ThemeUtils.resolveString(
-                context,
-                R.attr.gallery_media_empty_tips,
-                R.string.gallery_default_media_empty_tips
-            ).run {
-                EmptyViewUtils.showMessage(ll_empty_view, this)
-            }
-        }
-
-        rv_media.onLoadMoreComplete()
-    }
-
-    override fun onRequestBucketCallback(list: List<BucketEntity>?) {
-        if (list.isNullOrEmpty()) {
-            return
-        }
-
-        mBucketBeanList.addAll(list)
-        mBucketAdapter?.setSelectedBucket(list[0])
-    }
-
-    override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
-
-        rv_media.setEmptyView(ll_empty_view)
-        val gridLayoutManager = GridLayoutManager(context, 3)
-        gridLayoutManager.orientation = GridLayoutManager.VERTICAL
-        rv_media.addItemDecoration(MarginDecoration(context!!))
-        rv_media.layoutManager = gridLayoutManager
-        rv_media.setOnLoadMoreListener(this)
-        rv_media.setFooterViewHide(true)
-
-        tv_folder_name.setOnClickListener(this)
-        tv_preview.setOnClickListener(this)
-        tv_preview.isEnabled = false
-        if (mConfiguration!!.radio) {
-            view.findViewById<View>(R.id.tv_preview_vr).visibility = View.GONE
-            tv_preview.visibility = View.GONE
-        } else {
-            if (mConfiguration!!.hidePreview) {
-                view.findViewById<View>(R.id.tv_preview_vr).visibility = View.GONE
-                tv_preview.visibility = View.GONE
-            } else {
-                view.findViewById<View>(R.id.tv_preview_vr).visibility = View.VISIBLE
-                tv_preview.visibility = View.VISIBLE
-            }
-        }
-
-        mMediaBeanList = java.util.ArrayList()
         mScreenSize = DeviceUtils.getScreenSize(context!!)
-        mMediaGridAdapter = MediaGridAdapter(
+
+        MediaGridAdapter(
             context as MediaActivity,
-            mMediaBeanList,
+            mMediaEntityList,
             mScreenSize!!.widthPixels,
             mConfiguration!!
-        )
-        rv_media.adapter = mMediaGridAdapter
+        ).run {
+             mMediaGridAdapter = this
+             rv_media.adapter = this
+        }
         mMediaGridPresenter = MediaGridPresenterImpl(context!!, mConfiguration!!.image).apply {
             setMediaGridView(this@MediaGridFragment)
         }
 
-        val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.orientation = GridLayoutManager.VERTICAL
-        rv_bucket.addItemDecoration(
-            HorizontalDividerItemDecoration.Builder(context!!)
-                .color(resources.getColor(R.color.gallery_bucket_list_decoration_color))
-                .size(resources.getDimensionPixelSize(R.dimen.gallery_divider_decoration_height))
-                .margin(
-                    resources.getDimensionPixelSize(R.dimen.gallery_bucket_margin),
-                    resources.getDimensionPixelSize(R.dimen.gallery_bucket_margin)
-                )
-                .build()
-        )
-        rv_bucket.layoutManager = linearLayoutManager
-        mBucketBeanList = java.util.ArrayList()
+        LinearLayoutManager(context).apply {
+            orientation = GridLayoutManager.VERTICAL
+        }.run {
+            rv_bucket.addItemDecoration(
+                HorizontalDividerItemDecoration.Builder(context!!)
+                    .color(resources.getColor(R.color.gallery_bucket_list_decoration_color))
+                    .size(resources.getDimensionPixelSize(R.dimen.gallery_divider_decoration_height))
+                    .margin(
+                        resources.getDimensionPixelSize(R.dimen.gallery_bucket_margin),
+                        resources.getDimensionPixelSize(R.dimen.gallery_bucket_margin)
+                    )
+                    .build()
+            )
+            rv_bucket.layoutManager = this
+        }
+
         BucketAdapter(
-            mBucketBeanList, mConfiguration!!, ContextCompat.getColor(
+            mBucketEntityList, mConfiguration!!, ContextCompat.getColor(
                 context!!, R.color.gallery_bucket_list_item_normal_color
             )
         ).apply {
-
             setOnItemClickListener { _, position, _ ->
-                val bucketBean = mBucketBeanList[position]
+                val bucketBean = mBucketEntityList[position]
                 val bucketId = bucketBean.bucketId
                 rl_bucket_overview.visibility = View.GONE
                 if (TextUtils.equals(mBucketId, bucketId)) {
@@ -315,20 +274,20 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 mBucketId = bucketId
                 EmptyViewUtils.showLoading(ll_empty_view)
                 rv_media.setHasLoadMore(false)
-                mMediaBeanList.clear()
-                mMediaGridAdapter?.notifyDataSetChanged()
+                mMediaEntityList.clear()
+                mMediaGridAdapter.notifyDataSetChanged()
                 tv_folder_name.text = bucketBean.bucketName
                 mBucketAdapter?.setSelectedBucket(bucketBean)
                 rv_media.setFooterViewHide(true)
                 mPage = 1
-                mMediaGridPresenter?.getMediaList(mBucketId!!, mPage, LIMIT)
+                mMediaGridPresenter.getMediaList(mBucketId!!, mPage, LIMIT)
             }
         }.run {
             mBucketAdapter = this
             rv_bucket.adapter =this
         }
         rv_media.setOnItemClickListener(this)
-        mMediaGridPresenter!!.getBucketList()
+        mMediaGridPresenter.getBucketList()
 
         rl_bucket_overview.visibility = View.INVISIBLE
 
@@ -342,8 +301,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
 
         subscribeEvent()
-
-
 
         if (mConfiguration!!.image) {
             tv_folder_name.setText(R.string.gallery_all_image)
@@ -363,53 +320,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         if (success) {
             mMediaGridPresenter!!.getMediaList(mBucketId!!, mPage, LIMIT)
         }
-
-    }
-
-    /**
-     * RxBus
-     */
-    private fun subscribeEvent() {
-        mMediaCheckChangeDisposable =
-            RxBus.getDefault().toObservable(MediaCheckChangeEvent::class.java)
-                .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
-                    override fun onEvent(t: MediaCheckChangeEvent) {
-                        tv_preview.isEnabled = !(context as MediaActivity).mCheckedList.isNullOrEmpty()
-
-                    }
-                })
-        RxBus.getDefault().add(mMediaCheckChangeDisposable)
-
-        mCloseMediaViewPageFragmentDisposable =
-            RxBus.getDefault().toObservable(CloseMediaViewPageFragmentEvent::class.java)
-                .subscribeWith(object : RxBusDisposable<CloseMediaViewPageFragmentEvent>() {
-                    @Throws(Exception::class)
-                    override fun onEvent(t: CloseMediaViewPageFragmentEvent) {
-                        mMediaGridAdapter?.notifyDataSetChanged()
-                    }
-                })
-        RxBus.getDefault().add(mCloseMediaViewPageFragmentDisposable)
-
-        mRequestStorageReadAccessPermissionDisposable =
-            RxBus.getDefault().toObservable(RequestStorageReadAccessPermissionEvent::class.java)
-                .subscribeWith(object : RxBusDisposable<RequestStorageReadAccessPermissionEvent>() {
-                    @Throws(Exception::class)
-                    override fun onEvent(t: RequestStorageReadAccessPermissionEvent) {
-                        if (t.type == RequestStorageReadAccessPermissionEvent.TYPE_WRITE) {
-                            if (t.success) {
-                                mMediaGridPresenter?.getMediaList(mBucketId!!, mPage, LIMIT)
-                            } else {
-                                activity?.finish()
-                            }
-                        } else {
-                            if (t.success) {
-                                openCamera(context as MediaActivity)
-                            }
-                        }
-                    }
-                })
-        RxBus.getDefault().add(mRequestStorageReadAccessPermissionDisposable)
-
     }
 
     override fun setTheme() {
@@ -454,11 +364,61 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     }
 
+    /**
+     * RxBus
+     */
+    private fun subscribeEvent() {
+        RxBus.getDefault().run {
+            toObservable(MediaCheckChangeEvent::class.java)
+                .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
+                    override fun onEvent(t: MediaCheckChangeEvent) {
+                        tv_preview.isEnabled = !(context as MediaActivity).mCheckedList.isNullOrEmpty()
+                    }
+                }).run {
+                    mMediaCheckChangeDisposable = this
+                    add(this)
+                }
+
+            toObservable(CloseMediaViewPageFragmentEvent::class.java)
+                .subscribeWith(object : RxBusDisposable<CloseMediaViewPageFragmentEvent>() {
+                    @Throws(Exception::class)
+                    override fun onEvent(t: CloseMediaViewPageFragmentEvent) {
+                        mMediaGridAdapter.notifyDataSetChanged()
+                    }
+                })
+                .run {
+                    mCloseMediaViewPageFragmentDisposable = this
+                    add(this)
+                }
+
+            toObservable(RequestStorageReadAccessPermissionEvent::class.java)
+                .subscribeWith(object : RxBusDisposable<RequestStorageReadAccessPermissionEvent>() {
+                    @Throws(Exception::class)
+                    override fun onEvent(t: RequestStorageReadAccessPermissionEvent) {
+                        if (t.type == RequestStorageReadAccessPermissionEvent.TYPE_WRITE) {
+                            if (t.success) {
+                                mMediaGridPresenter?.getMediaList(mBucketId!!, mPage, LIMIT)
+                            } else {
+                                activity?.finish()
+                            }
+                        } else {
+                            if (t.success) {
+                                openCamera(context as MediaActivity)
+                            }
+                        }
+                    }
+                }).run {
+                    add(this)
+                }
+        }
+    }
+
     fun openCamera(context: Context?) {
         val image = mConfiguration!!.image
 
-        val captureIntent =
-            if (image) Intent(MediaStore.ACTION_IMAGE_CAPTURE) else Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        val captureIntent = if (image) Intent(MediaStore.ACTION_IMAGE_CAPTURE) else
+            Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+
         if (captureIntent.resolveActivity(context!!.packageManager) == null) {
             Toast.makeText(getContext(), R.string.gallery_device_camera_unable, Toast.LENGTH_SHORT)
                 .show()
@@ -471,7 +431,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 Date()
             )
         )
-        Logger.i("openCamera：${mImageStoreDir!!.absolutePath}")
+        Logger.i("openCamera：${mImageStoreDir?.absolutePath}")
         val fileImagePath = File(mImageStoreDir, filename)
         mImagePath = fileImagePath.absolutePath
 
@@ -487,54 +447,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         // video : 1: 高质量  0 低质量
         //        captureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
         startActivityForResult(captureIntent, TAKE_IMAGE_REQUEST_CODE)
-    }
-
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Logger.i("onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
-        if (requestCode == TAKE_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Logger.i(String.format("拍照成功,图片存储路径:%s", mImagePath))
-            mMediaScanner?.scanFile(
-                mImagePath!!,
-                if (mConfiguration!!.image) IMAGE_TYPE else "",
-                this
-            )
-        } else if (requestCode == 222) {
-            Toast.makeText(activity, "摄像成功", Toast.LENGTH_SHORT).show()
-        } else if (requestCode == CROP_IMAGE_REQUEST_CODE) {
-            Logger.i("裁剪成功")
-            refreshUI()
-            onCropFinished()
-        }
-    }
-
-
-    /**
-     * 裁剪之后
-     * setResult(RESULT_OK, new Intent()
-     * .putExtra(UCrop.EXTRA_OUTPUT_URI, uri)
-     * .putExtra(UCrop.EXTRA_OUTPUT_CROP_ASPECT_RATIO, resultAspectRatio)
-     * .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_WIDTH, imageWidth)
-     * .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, imageHeight)
-     */
-    private fun onCropFinished() {
-        if (iListenerRadio != null && mCropPath != null) {
-            if (mConfiguration!!.crop) {
-                iListenerRadio?.cropAfter(mCropPath!!)
-            }
-        } else {
-            Logger.i("# CropPath is null！# ")
-        }
-        //裁剪默认会关掉这个界面. 实现接口返回true则不关闭.
-        if (iListenerRadio == null) {
-            activity?.finish()
-        } else {
-            val flag = iListenerRadio?.isActivityFinish()
-            Logger.i("# crop image is flag # :$flag")
-            if (flag==null||flag)
-                activity?.finish()
-        }
     }
 
     override fun onStart() {
@@ -579,15 +491,13 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                     tv_folder_name.isEnabled = true
                     rl_bucket_overview.visibility = View.GONE
                 }
-
             }
             animate()
         }
     }
 
-
     override fun onItemClick(holder: RecyclerView.ViewHolder?, position: Int) {
-        val entity = mMediaBeanList[position]
+        val entity = mMediaEntityList[position]
         if (entity.id == Integer.MIN_VALUE.toLong()) {
 
             if (!CameraUtils.hasCamera(context!!)) {
@@ -596,14 +506,16 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 return
             }
 
-            val b = PermissionCheckUtils.checkCameraPermission(
-                context as MediaActivity,
-                requestStorageAccessPermissionTips!!,
-                MediaActivity.REQUEST_CAMERA_ACCESS_PERMISSION
-            )
-            if (b) {
+            takeIf {
+                PermissionCheckUtils.checkCameraPermission(
+                    context as MediaActivity,
+                    requestStorageAccessPermissionTips!!,
+                    MediaActivity.REQUEST_CAMERA_ACCESS_PERMISSION
+                )    
+            }.run {
                 openCamera(context as MediaActivity)
             }
+             
         } else {
             if (mConfiguration!!.radio) {
                 if (mConfiguration!!.image) {
@@ -612,14 +524,14 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                     videoRadioNext(entity)
                 }
             } else {
-                val firstBean = mMediaBeanList[0]
-                val gridMediaList = java.util.ArrayList<MediaEntity>()
-                gridMediaList.addAll(mMediaBeanList)
+                val firstEntity = mMediaEntityList[0]
+                val gridMediaList = ArrayList<MediaEntity>()
+                gridMediaList.addAll(mMediaEntityList)
                 var pos = position
-                if (firstBean.id == Integer.MIN_VALUE.toLong()) {
+                if (firstEntity.id == Integer.MIN_VALUE.toLong()) {
                     pos = position - 1
                     gridMediaList.clear()
-                    val list = mMediaBeanList.subList(1, mMediaBeanList.size)
+                    val list = mMediaEntityList.subList(1, mMediaEntityList.size)
                     gridMediaList.addAll(list)
                 }
                 RxBus.getDefault().post(OpenMediaPageFragmentEvent(gridMediaList, pos))
@@ -630,11 +542,11 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     private fun radioNext(entity: MediaEntity) = mConfiguration?.run {
         Logger.i("isCrop :" + this.crop)
         if (!this.crop) {
-            setPostMediaEntity(entity)
+            this@MediaGridFragment.setPostMediaEntity(entity)
             activity?.finish()
         } else {
             //裁剪根据大家需求加上选择完图片后的回调
-            setPostMediaEntity(entity)
+            this@MediaGridFragment.setPostMediaEntity(entity)
             val originalPath = entity.originalPath
             val file = File(originalPath!!)
             val random = Random()
@@ -653,10 +565,10 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 file.mkdirs()
             }
             val inputUri = Uri.fromFile(File(entity.originalPath!!))
-            val intent = Intent(context, UCropActivity::class.java)
+            val intent = Intent(this@MediaGridFragment.context, UCropActivity::class.java)
 
             // UCrop 参数 start
-            val bundle = Bundle().apply {
+            Bundle().apply {
                 putParcelable(UCrop.EXTRA_OUTPUT_URI, outUri)
                 putParcelable(UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS, entity)
                 putInt(UCrop.Options.EXTRA_STATUS_BAR_COLOR, uCropStatusColor)
@@ -664,57 +576,60 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 putString(UCrop.Options.EXTRA_UCROP_TITLE_TEXT_TOOLBAR, uCropTitle)
                 putInt(UCrop.Options.EXTRA_UCROP_COLOR_WIDGET_ACTIVE, uCropActivityWidgetColor)
                 putInt(UCrop.Options.EXTRA_UCROP_WIDGET_COLOR_TOOLBAR, uCropToolbarWidgetColor)
+                putBoolean(
+                    UCrop.Options.EXTRA_HIDE_BOTTOM_CONTROLS,
+                    hideBottomControls
+                )
+                putIntArray(
+                    UCrop.Options.EXTRA_ALLOWED_GESTURES,
+                    gestures
+                )
+                putInt(
+                    UCrop.Options.EXTRA_COMPRESSION_QUALITY,
+                    compressionQuality
+                )
+                putInt(UCrop.Options.EXTRA_MAX_BITMAP_SIZE, mConfiguration!!.maxBitmapSize)
+                putFloat(
+                    UCrop.Options.EXTRA_MAX_SCALE_MULTIPLIER,
+                    maxScaleMultiplier
+                )
+                putFloat(UCrop.EXTRA_ASPECT_RATIO_X, aspectRatioX)
+                putFloat(UCrop.EXTRA_ASPECT_RATIO_Y, aspectRatioY)
+                putInt(UCrop.EXTRA_MAX_SIZE_X, maxResultWidth)
+                putInt(UCrop.EXTRA_MAX_SIZE_Y, maxResultHeight)
+                putInt(
+                    UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT,
+                    selectedByDefault
+                )
+                putBoolean(
+                    UCrop.Options.EXTRA_FREE_STYLE_CROP,
+                    freestyleCropEnabled
+                )
+                putParcelable(UCrop.EXTRA_INPUT_URI, inputUri)
+                // UCrop 参数 end
+
+                ArrayList<AspectRatio>().apply {
+                    if (aspectRatio!=null){
+//                    Logger.i("自定义比例=>" + aspectRatioList[i].aspectRatioX + " " + aspectRatioList[i].aspectRatioY)
+                        addAll(aspectRatio!!)
+                    }
+                }.run {
+                    //  AspectRatio[]aspectRatios =  mConfiguration.getAspectRatio();
+                    putParcelableArrayList(
+                        UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS,
+                        this
+                    )//EXTRA_CONFIGURATION
+                }
+            }.run {
+                intent.putExtras(this)
             }
 
-            bundle.putBoolean(
-                UCrop.Options.EXTRA_HIDE_BOTTOM_CONTROLS,
-                this.hideBottomControls
-            )
-            bundle.putIntArray(
-                UCrop.Options.EXTRA_ALLOWED_GESTURES,
-                this.gestures
-            )
-            bundle.putInt(
-                UCrop.Options.EXTRA_COMPRESSION_QUALITY,
-                this.compressionQuality
-            )
-            bundle.putInt(UCrop.Options.EXTRA_MAX_BITMAP_SIZE, mConfiguration!!.maxBitmapSize)
-            bundle.putFloat(
-                UCrop.Options.EXTRA_MAX_SCALE_MULTIPLIER,
-                this.maxScaleMultiplier
-            )
-            bundle.putFloat(UCrop.EXTRA_ASPECT_RATIO_X, this.aspectRatioX)
-            bundle.putFloat(UCrop.EXTRA_ASPECT_RATIO_Y, this.aspectRatioY)
-            bundle.putInt(UCrop.EXTRA_MAX_SIZE_X, this.maxResultWidth)
-            bundle.putInt(UCrop.EXTRA_MAX_SIZE_Y, this.maxResultHeight)
-            bundle.putInt(
-                UCrop.Options.EXTRA_ASPECT_RATIO_SELECTED_BY_DEFAULT,
-                this.selectedByDefault
-            )
-            bundle.putBoolean(
-                UCrop.Options.EXTRA_FREE_STYLE_CROP,
-                this.freestyleCropEnabled
-            )
-            bundle.putParcelable(UCrop.EXTRA_INPUT_URI, inputUri)
-            // UCrop 参数 end
+
 
             val bk = FileUtils.existImageDir(inputUri.path!!)
             Logger.i("--->" + inputUri.path!!)
             Logger.i("--->" + outUri.path!!)
-            val aspectRatioList = java.util.ArrayList<AspectRatio>()
-            val aspectRatios = this.aspectRatio
-            if (aspectRatios != null) {
-                for (i in aspectRatios.indices) {
-                    aspectRatioList.add(i, aspectRatios[i])
-                    Logger.i("自定义比例=>" + aspectRatioList[i].aspectRatioX + " " + aspectRatioList[i].aspectRatioY)
-                }
-            }
-            //  AspectRatio[]aspectRatios =  mConfiguration.getAspectRatio();
-            bundle.putParcelableArrayList(
-                UCrop.Options.EXTRA_ASPECT_RATIO_OPTIONS,
-                aspectRatioList
-            )//EXTRA_CONFIGURATION
-            intent.putExtras(bundle)
+
             if (bk != -1) {
                 //裁剪
                 startActivityForResult(intent, CROP_IMAGE_REQUEST_CODE)
@@ -727,7 +642,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     private fun videoRadioNext(entity:MediaEntity){
         if (!mConfiguration!!.isVideoPreview) {
-            setPostMediaBean(entity)
+            this.setPostMediaEntity(entity)
             activity?.finish()
             return
         }
@@ -743,23 +658,13 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     /**
      * 处理回调
      */
-    private fun setPostMediaBean(entity: MediaEntity) {
-        val bean = ImageCropEntity()
-        bean.copyMediaEntity(entity)
-        RxBus.getDefault().post(ImageRadioResultEvent(bean))
-    }
-
-    /**
-     * 处理回调
-     */
-    private fun setPostMediaEntity(mediaBean: MediaEntity) {
-        val bean = ImageCropEntity()
-        bean.copyMediaEntity(mediaBean)
-        RxBus.getDefault().post(ImageRadioResultEvent(bean))
+    private fun setPostMediaEntity(mediaBean: MediaEntity) = ImageCropEntity().run{
+        copyMediaEntity(mediaBean)
+        RxBus.getDefault().post(ImageRadioResultEvent(this))
     }
 
     override fun loadMore() {
-        mMediaGridPresenter?.getMediaList(mBucketId!!, mPage, LIMIT)
+        mMediaGridPresenter.getMediaList(mBucketId!!, mPage, LIMIT)
     }
 
     override fun onClick(v: View) {
@@ -776,6 +681,23 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Logger.i("onActivityResult: requestCode=$requestCode, resultCode=$resultCode")
+        if (requestCode == TAKE_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Logger.i(String.format("拍照成功,图片存储路径:%s", mImagePath))
+            mMediaScanner.scanFile(
+                mImagePath!!, if (mConfiguration!!.image) IMAGE_TYPE else "", this
+            )
+        } else if (requestCode == 222) {
+            Toast.makeText(activity, "摄像成功", Toast.LENGTH_SHORT).show()
+        } else if (requestCode == CROP_IMAGE_REQUEST_CODE) {
+            Logger.i("裁剪成功")
+            refreshUI()
+            onCropFinished()
+        }
+    }
+
     /**
      * Observable刷新图库
      */
@@ -784,15 +706,42 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             Logger.i("->getImageStoreDirByFile().getPath().toString()：${getImageStoreDirByFile()?.path}" )
             Logger.i("->getImageStoreCropDirByStr ().toString()：${getImageStoreCropDirByStr()}")
             if (!TextUtils.isEmpty(mImagePath))
-                mMediaScanner?.scanFile(mImagePath!!, IMAGE_TYPE, this)
+                mMediaScanner.scanFile(mImagePath!!, IMAGE_TYPE, this)
             if (mCropPath != null) {
                 Logger.i("""->mCropPath:${mCropPath?.path} $IMAGE_TYPE""")
-                mMediaScanner?.scanFile(mCropPath?.path!!, IMAGE_TYPE, this)
+                mMediaScanner.scanFile(mCropPath?.path!!, IMAGE_TYPE, this)
             }
         } catch (e: Exception) {
             Logger.e(e.message)
         }
+    }
 
+
+    /**
+     * 裁剪之后
+     * setResult(RESULT_OK, new Intent()
+     * .putExtra(UCrop.EXTRA_OUTPUT_URI, uri)
+     * .putExtra(UCrop.EXTRA_OUTPUT_CROP_ASPECT_RATIO, resultAspectRatio)
+     * .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_WIDTH, imageWidth)
+     * .putExtra(UCrop.EXTRA_OUTPUT_IMAGE_HEIGHT, imageHeight)
+     */
+    private fun onCropFinished() {
+        if (iListenerRadio != null && mCropPath != null) {
+            if (mConfiguration!!.crop) {
+                iListenerRadio?.cropAfter(mCropPath!!)
+            }
+        } else {
+            Logger.i("# CropPath is null！# ")
+        }
+        //裁剪默认会关掉这个界面. 实现接口返回true则不关闭.
+        if (iListenerRadio == null) {
+            activity?.finish()
+        } else {
+            val flag = iListenerRadio?.isActivityFinish()
+            Logger.i("# crop image is flag # :$flag")
+            if (flag==null||flag)
+                activity?.finish()
+        }
     }
 
     override fun onScanCompleted(images: Array<String>?) {
@@ -803,11 +752,11 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
         // mediaBean 有可能为Null，onNext 做了处理，在 getMediaBeanWithImage 时候就不处理Null了
         Observable.create(ObservableOnSubscribe<MediaEntity> {
-            val mediaBean = if (mConfiguration!!.image)
+            val entity = if (mConfiguration!!.image)
                 MediaUtils.getMediaEntityWithImage(context!!, images[0])
             else
                 MediaUtils.getMediaEntityWithVideo(context!!, images[0])
-            it.onNext(mediaBean!!)
+            it.onNext(entity!!)
             it.onComplete()
         })
             .subscribeOn(Schedulers.io())
@@ -816,20 +765,20 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 override fun onComplete() {}
 
                 override fun onError(e: Throwable) {
-                    Logger.i("获取MediaBean异常$e")
+                    e.printStackTrace()
+                    Logger.i("获取MediaEntity异常$e")
                 }
 
-                override fun onNext(mediaBean: MediaEntity) {
+                override fun onNext(entity : MediaEntity) {
                     if (!isDetached) {
-                        val bk = FileUtils.existImageDir(mediaBean.originalPath!!)
+                        val bk = FileUtils.existImageDir(entity.originalPath)
                         if (bk != -1) {
-                            mMediaBeanList.add(1, mediaBean)
-                            mMediaGridAdapter!!.notifyDataSetChanged()
+                            mMediaEntityList.add(1, entity)
+                            mMediaGridAdapter.notifyDataSetChanged()
                         } else {
                             Logger.i("获取：无")
                         }
                     }
-
                 }
             })
     }
@@ -862,6 +811,58 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
     }
 
+    override fun onRequestMediaCallback(list: List<MediaEntity>?) {
+        if (!mConfiguration!!.hideCamera) {
+            if (mPage == 1 && TextUtils.equals(mBucketId, Integer.MIN_VALUE.toString())) {
+                MediaEntity().run {
+                    id = Integer.MIN_VALUE.toLong()
+                    bucketId = Integer.MIN_VALUE.toString()
+                    mMediaEntityList.add(this)
+                }
+            }
+        }
+        if (!list.isNullOrEmpty()) {
+            mMediaEntityList.addAll(list)
+            Logger.i(String.format("得到:%s张图片", list.size))
+        } else {
+            Logger.i("没有更多图片")
+        }
+        mMediaGridAdapter.notifyDataSetChanged()
+
+        mPage++
+
+        if (list == null || list.size < LIMIT) {
+            rv_media.setFooterViewHide(true)
+            false
+        } else {
+            rv_media.setFooterViewHide(false)
+            true
+        }.run {
+            rv_media.setHasLoadMore(this)
+        }
+
+        if (mMediaEntityList.isNullOrEmpty()) {
+            ThemeUtils.resolveString(
+                context,
+                R.attr.gallery_media_empty_tips,
+                R.string.gallery_default_media_empty_tips
+            ).run {
+                EmptyViewUtils.showMessage(ll_empty_view, this)
+            }
+        }
+
+        rv_media.onLoadMoreComplete()
+    }
+
+    override fun onRequestBucketCallback(list: List<BucketEntity>?) {
+        if (list.isNullOrEmpty()) {
+            return
+        }
+
+        mBucketEntityList.addAll(list)
+        mBucketAdapter?.setSelectedBucket(list[0])
+    }
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (!TextUtils.isEmpty(mImagePath)) {
@@ -883,7 +884,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     override fun onDestroy() {
         super.onDestroy()
-        mMediaScanner?.unScanFile()
+        mMediaScanner.unScanFile()
     }
 
 }

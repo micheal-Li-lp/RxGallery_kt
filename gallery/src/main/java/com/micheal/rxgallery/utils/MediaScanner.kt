@@ -11,7 +11,7 @@ class MediaScanner(context: Context) {
     private var scanCallback: ScanCallback? = null
 
     init {
-        val client = object : MediaScannerConnection.MediaScannerConnectionClient{
+        object : MediaScannerConnection.MediaScannerConnectionClient{
             override fun onMediaScannerConnected() {
                 Logger.i("onMediaScannerConnected")
                 filePaths?.forEach {
@@ -25,9 +25,10 @@ class MediaScanner(context: Context) {
                 fileType = null
                 filePaths = null
             }
-        }
 
-        mediaScanConn = MediaScannerConnection(context, client)
+        }.apply {
+            mediaScanConn = MediaScannerConnection(context, this)
+        }
 
     }
 

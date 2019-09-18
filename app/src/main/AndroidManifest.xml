@@ -26,8 +26,8 @@
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".imageloader.ImageLoaderActivity" />
 
+        <activity android:name=".imageloader.ImageLoaderActivity" />
 
         <activity android:name="com.micheal.rxgallery.ui.activity.MediaActivity"
             android:exported="true"

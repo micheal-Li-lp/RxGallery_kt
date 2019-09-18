@@ -2,6 +2,7 @@ package com.micheal.rxgallery.entity
 
 import android.os.Parcel
 import android.os.Parcelable
+import java.io.File
 
 open class MediaEntity() : Parcelable,BaseEntity{
 
@@ -33,9 +34,20 @@ open class MediaEntity() : Parcelable,BaseEntity{
     var bucketDisplayName: String? = null
     //大缩略图
     var thumbnailBigPath: String? = null
+        get() {
+            if (field!=null&&File(field!!).exists()){
+                return field
+            }
+            return ""
+        }
     //小缩略图
     var thumbnailSmallPath: String? = null
-
+        get() {
+            if (field!=null&&File(field!!).exists()){
+                return field
+            }
+            return ""
+        }
 
     constructor(`in`: Parcel) : this() {
         id = `in`.readLong()

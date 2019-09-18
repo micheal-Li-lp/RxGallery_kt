@@ -18,11 +18,11 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private static final int ITEM_VIEW_TYPE_FOOTER = 0;
     private static final int ITEM_VIEW_TYPE_ITEM = 1;
 
-    private final BaseAdapter mAdapter;
+    private final RecyclerView.Adapter mAdapter;
     private final View mFooterView;
     private OnItemClickListener mOnItemClickListener;
 
-    public FooterAdapter(BaseAdapter adapter, View footerView) {
+    public FooterAdapter(RecyclerView.Adapter adapter, View footerView) {
         this.mAdapter = adapter;
         this.mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
@@ -39,7 +39,11 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (viewType == ITEM_VIEW_TYPE_FOOTER) {
             return new FooterViewHolder(mFooterView);
         }
-        return mAdapter.onCreateViewHolder(parent, mAdapter.getItemViewType());
+        if (mAdapter instanceof BaseAdapter) {
+            return mAdapter.onCreateViewHolder(parent, ((BaseAdapter)mAdapter).getItemViewType());
+        }else {
+            return mAdapter.onCreateViewHolder(parent, viewType);
+        }
     }
 
     @Override
@@ -48,7 +52,7 @@ public class FooterAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             if (mOnItemClickListener != null) {
                 holder.itemView.setOnClickListener(v -> mOnItemClickListener.onItemClick(holder, position));
             }
-            mAdapter.onBindViewHolder((BaseHolder) holder, position);
+            mAdapter.onBindViewHolder(holder, position);
         }
     }
 

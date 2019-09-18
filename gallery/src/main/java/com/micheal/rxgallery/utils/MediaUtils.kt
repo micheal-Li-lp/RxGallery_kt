@@ -112,12 +112,12 @@ object MediaUtils {
             this.thumbnailBigPath = createThumbnailBigFileName(
                 context,
                 originalPath
-            ).getAbsolutePath()
+            ).absolutePath
 
             this.thumbnailSmallPath = createThumbnailSmallFileName(
                 context,
                 originalPath
-            ).getAbsolutePath()
+            ).absolutePath
 
         }
 
@@ -383,23 +383,25 @@ object MediaUtils {
      */
     fun getMediaEntityWithImage(context: Context, originalPath: String): MediaEntity? {
         val contentResolver = context.contentResolver
-        val projection = ArrayList<String>()
-        projection.add(MediaStore.Images.Media._ID)
-        projection.add(MediaStore.Images.Media.TITLE)
-        projection.add(MediaStore.Images.Media.DATA)
-        projection.add(MediaStore.Images.Media.BUCKET_ID)
-        projection.add(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
-        projection.add(MediaStore.Images.Media.MIME_TYPE)
-        projection.add(MediaStore.Images.Media.DATE_ADDED)
-        projection.add(MediaStore.Images.Media.DATE_MODIFIED)
-        projection.add(MediaStore.Images.Media.LATITUDE)
-        projection.add(MediaStore.Images.Media.LONGITUDE)
-        projection.add(MediaStore.Images.Media.ORIENTATION)
-        projection.add(MediaStore.Images.Media.SIZE)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            projection.add(MediaStore.Images.Media.WIDTH)
-            projection.add(MediaStore.Images.Media.HEIGHT)
+        val projection = ArrayList<String>().apply {
+            add(MediaStore.Images.Media._ID)
+            add(MediaStore.Images.Media.TITLE)
+            add(MediaStore.Images.Media.DATA)
+            add(MediaStore.Images.Media.BUCKET_ID)
+            add(MediaStore.Images.Media.BUCKET_DISPLAY_NAME)
+            add(MediaStore.Images.Media.MIME_TYPE)
+            add(MediaStore.Images.Media.DATE_ADDED)
+            add(MediaStore.Images.Media.DATE_MODIFIED)
+            add(MediaStore.Images.Media.LATITUDE)
+            add(MediaStore.Images.Media.LONGITUDE)
+            add(MediaStore.Images.Media.ORIENTATION)
+            add(MediaStore.Images.Media.SIZE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                add(MediaStore.Images.Media.WIDTH)
+                add(MediaStore.Images.Media.HEIGHT)
+            }
         }
+
         val cursor = contentResolver.query(
             MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
             projection.toTypedArray(),
@@ -407,15 +409,15 @@ object MediaUtils {
             arrayOf(originalPath),
             null
         )
-        var MediaEntity: MediaEntity? = null
+        var entity: MediaEntity? = null
         if (cursor != null && cursor.count > 0) {
             cursor.moveToFirst()
-            MediaEntity = parseImageCursorAndCreateThumImage(context, cursor)
+            entity = parseImageCursorAndCreateThumImage(context, cursor)
         }
         if (cursor != null && !cursor.isClosed) {
             cursor.close()
         }
-        return MediaEntity
+        return entity
     }
 
     /**

@@ -137,7 +137,7 @@ class Configuration() :Parcelable{
     }
 
 
-    fun getImageConfig(): Bitmap.Config {
+    fun getImageConfig1(): Bitmap.Config {
         when (imageConfig) {
             1 -> return Bitmap.Config.ALPHA_8
             2 -> return Bitmap.Config.ARGB_4444

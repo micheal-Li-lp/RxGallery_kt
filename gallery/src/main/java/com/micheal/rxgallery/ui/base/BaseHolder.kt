@@ -31,6 +31,10 @@ abstract class BaseHolder<T : BaseEntity>(itemView: View) :
         this.mOnViewClickListener = listener
     }
 
+    fun <T :View> findViewById(id:Int):T{
+        return itemView.findViewById(id)
+    }
+
     private var mOnDeleteListener: OnDeleteListener? = null
 
     interface OnDeleteListener {

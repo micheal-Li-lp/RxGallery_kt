@@ -1,12 +1,10 @@
 package com.micheal.rxgallery.ui.adapter
 
-import android.text.TextUtils
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.core.content.ContextCompat
-import com.facebook.drawee.view.SimpleDraweeView
 import com.micheal.rxgallery.Configuration
 import com.micheal.rxgallery.R
 import com.micheal.rxgallery.entity.MediaEntity
@@ -19,13 +17,11 @@ import com.micheal.rxgallery.ui.activity.MediaActivity
 import com.micheal.rxgallery.ui.base.BaseAdapter
 import com.micheal.rxgallery.ui.base.BaseHolder
 import com.micheal.rxgallery.ui.base.IMultiImageCheckedListener
-import com.micheal.rxgallery.ui.widget.FixImageView
 import com.micheal.rxgallery.ui.widget.SquareImageView
 import com.micheal.rxgallery.ui.widget.SquareLinearLayout
 import com.micheal.rxgallery.utils.Logger
 import com.micheal.rxgallery.utils.OsCompat
 import com.micheal.rxgallery.utils.ThemeUtils
-import uk.co.senab.photoview.PhotoView
 import java.io.File
 
 class MediaGridAdapter(private val mMediaActivity :MediaActivity,
@@ -74,8 +70,6 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
 
     private var imageLoaderType = configuration.imageLoaderType
 
-
-
     override fun getData() = list
 
     override fun getHolder(view: View, viewType: Int) = GridViewHolder(view)
@@ -98,12 +92,11 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
         override fun setData(data: MediaEntity, position: Int) {
 
             if (data.id == Integer.MIN_VALUE.toLong()) {
-
-                itemView.findViewById<AppCompatCheckBox>(R.id.cb_check).visibility = View.GONE
-                itemView.findViewById<SquareImageView>(R.id.iv_media_image).visibility = View.GONE
-                itemView.findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.VISIBLE
-                itemView.findViewById<ImageView>(R.id.iv_camera_image).setImageDrawable(mCameraImage)
-                itemView.findViewById<TextView>(R.id.tv_camera_txt).run {
+                findViewById<AppCompatCheckBox>(R.id.cb_check).visibility = View.GONE
+                findViewById<SquareImageView>(R.id.iv_media_image).visibility = View.GONE
+                findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.VISIBLE
+                findViewById<ImageView>(R.id.iv_camera_image).setImageDrawable(mCameraImage)
+                findViewById<TextView>(R.id.tv_camera_txt).run {
                     setTextColor(mCameraTextColor)
                     text = if (configuration.image) mMediaActivity.getString(R.string.gallery_take_image) else mMediaActivity.getString(
                         R.string.gallery_video
@@ -111,7 +104,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                     setBackgroundColor(mCameraImageBgColor)
                 }
             } else {
-                itemView.findViewById<AppCompatCheckBox>(R.id.cb_check).run {
+                findViewById<AppCompatCheckBox>(R.id.cb_check).run {
                     visibility = if (configuration.radio) {
                         View.GONE
                     } else {
@@ -161,41 +154,37 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                     }
                 }
 
-
-                itemView.findViewById<PhotoView>(R.id.iv_media_image).visibility = View.VISIBLE
-                itemView.findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.GONE
-                itemView.findViewById<AppCompatCheckBox>(R.id.cb_check).isChecked = mMediaActivity.mCheckedList.contains(
+                findViewById<SquareImageView>(R.id.iv_media_image).visibility = View.VISIBLE
+                findViewById<SquareLinearLayout>(R.id.ll_camera).visibility = View.GONE
+                findViewById<AppCompatCheckBox>(R.id.cb_check).isChecked = mMediaActivity.mCheckedList.contains(
                     data
                 )
-                val bitPath = data.thumbnailBigPath
-                val smallPath = data.thumbnailSmallPath
 
-                if (!File(bitPath).exists() || !File(smallPath).exists()) {
+                if (!File(data.thumbnailBigPath!!).exists() || !File(data.thumbnailSmallPath!!).exists()) {
                     val job = ImageThmbnailJobCreate(mMediaActivity, data).create()
                     RxJob.getDefault().addJob(job)
                 }
-                var path: String?
-                if (configuration.isPlayGif && (imageLoaderType == 3 || imageLoaderType == 2)) {
-                    path = data.originalPath
+                val path = if (configuration.isPlayGif && (imageLoaderType == 3 || imageLoaderType == 2)) {
+                   data.originalPath
                 } else {
-                    path = data.thumbnailSmallPath
-                    if (TextUtils.isEmpty(path)) {
-                        path = data.thumbnailBigPath
-                    }
-                    if (TextUtils.isEmpty(path)) {
-                        path = data.originalPath
+                    if (!data.thumbnailSmallPath.isNullOrEmpty()){
+                        data.thumbnailSmallPath
+                    }else if (!data.thumbnailBigPath.isNullOrEmpty()){
+                        data.thumbnailBigPath
+                    }else{
+                        data.originalPath
                     }
                 }
                 Logger.w("提示path：$path")
                 if (imageLoaderType != 3) {
-                    OsCompat.setBackgroundDrawableCompat(itemView.findViewById<PhotoView>(R.id.iv_media_image), mImageViewBg)
+                    OsCompat.setBackgroundDrawableCompat(findViewById(R.id.iv_media_image), mImageViewBg)
                     configuration.getImageLoader()
                         .displayImage(
                             mMediaActivity,
                             path!!,
-                            itemView.findViewById<PhotoView>(R.id.iv_media_image) as FixImageView,
+                            findViewById(R.id.iv_media_image),
                             mDefaultImage,
-                            configuration.getImageConfig(),
+                            configuration.getImageConfig1(),
                             true,
                             configuration.isPlayGif,
                             mImageSize,
@@ -203,16 +192,13 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                             data.orientation
                         )
                 } else {
-                    OsCompat.setBackgroundDrawableCompat(itemView.findViewById<PhotoView>(R.id.iv_media_image), mImageViewBg)
+                    OsCompat.setBackgroundDrawableCompat(findViewById(R.id.iv_media_image), mImageViewBg)
                     FrescoImageLoader.setImageSmall(
-                        "file://$path", itemView.findViewById<PhotoView>(R.id.iv_media_image) as SimpleDraweeView,
-                        mImageSize, mImageSize, itemView.findViewById(R.id.rootView), configuration.isPlayGif
+                        "file://$path", findViewById(R.id.iv_media_image),
+                        mImageSize, mImageSize, findViewById(R.id.rootView), configuration.isPlayGif
                     )
                 }
             }
         }
-
     }
-
-
 }
