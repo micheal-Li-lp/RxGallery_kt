@@ -20,11 +20,14 @@ import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.micheal.rxgallery.ui.widget.FixImageView
 import com.micheal.rxgallery.ui.widget.SquareRelativeLayout
 
-class FrescoImageLoader :AbsImageLoader{
+class FrescoImageLoader : AbsImageLoader{
 
     private var draweeHolder : DraweeHolder<GenericDraweeHierarchy>?=null
 
     companion object{
+
+
+
         @JvmStatic
         fun setImageSmall(url :String,simpleDraweeView: SimpleDraweeView,width: Int,height: Int,
                           relativeLayout: SquareRelativeLayout,playGif :Boolean
@@ -61,6 +64,7 @@ class FrescoImageLoader :AbsImageLoader{
         }
     }
 
+
     override fun displayImage(
         context: Context,
         path: String,
@@ -73,6 +77,7 @@ class FrescoImageLoader :AbsImageLoader{
         height: Int,
         rotate: Int
     ) {
+
         init(context,defaultDrawable)
         imageView.mImageViewListener = object : FixImageView.OnImageViewListener{
             override fun onDetach() {
@@ -84,7 +89,7 @@ class FrescoImageLoader :AbsImageLoader{
             }
 
             override fun verifyDrawable(dr: Drawable): Boolean {
-                return dr === draweeHolder!!.hierarchy.topLevelDrawable
+                return dr == draweeHolder!!.hierarchy.topLevelDrawable
             }
 
             override fun onDraw(canvas: Canvas?) {

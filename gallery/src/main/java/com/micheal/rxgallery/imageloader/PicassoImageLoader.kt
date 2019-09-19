@@ -10,8 +10,6 @@ import java.io.File
 
 class PicassoImageLoader : AbsImageLoader{
 
-
-
     override fun displayImage(
         context: Context,
         path: String,

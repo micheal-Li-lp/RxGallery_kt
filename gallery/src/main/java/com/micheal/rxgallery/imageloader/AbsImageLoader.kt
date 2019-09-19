@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import com.micheal.rxgallery.ui.widget.FixImageView
 
 interface AbsImageLoader {
+
     fun displayImage(context : Context,
                      path : String,
                      imageView : FixImageView,
@@ -16,4 +17,5 @@ interface AbsImageLoader {
                      width : Int,
                      height : Int,
                      rotate : Int)
+
 }
