@@ -26,8 +26,6 @@ class FrescoImageLoader : AbsImageLoader{
 
     companion object{
 
-
-
         @JvmStatic
         fun setImageSmall(url :String,simpleDraweeView: SimpleDraweeView,width: Int,height: Int,
                           relativeLayout: SquareRelativeLayout,playGif :Boolean

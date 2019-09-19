@@ -1,5 +1,6 @@
 package com.micheal.rxgallery
 
+import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Parcel
@@ -7,11 +8,14 @@ import android.os.Parcelable
 import androidx.annotation.IntRange
 import com.micheal.rxgallery.entity.MediaEntity
 import com.micheal.rxgallery.imageloader.*
+import com.micheal.rxgallery.utils.BaseUtils
 import com.yalantis.ucrop.model.AspectRatio
 import com.yalantis.ucrop.view.CropImageView
 import com.yalantis.ucrop.view.OverlayView
 
 class Configuration() :Parcelable{
+
+
     var image = true
     var context: Context? = null
     var selectedList: List<MediaEntity>? = null
@@ -108,14 +112,6 @@ class Configuration() :Parcelable{
 
     override fun describeContents() = 0
 
-    companion object CREATOR : Parcelable.Creator<Configuration> {
-
-        override fun createFromParcel(parcel: Parcel) = Configuration(parcel)
-
-        override fun newArray(size: Int): Array<Configuration?> = arrayOfNulls(size)
-
-    }
-
     fun setMaxResultSize(@IntRange(from=100) width: Int,@IntRange(from=100) height: Int) {
         this.maxResultWidth = width
         this.maxResultHeight = height
@@ -126,8 +122,21 @@ class Configuration() :Parcelable{
         2 -> GlideImageLoader()
         3 -> FrescoImageLoader()
         4 -> UniversalImageLoader()
-        else -> PicassoImageLoader()
+        else -> getImageLoaderByPkg()
     }
+
+    private fun getImageLoaderByPkg() :AbsImageLoader{
+       val context =  BaseApplication.INSTANCE!!.applicationContext
+        return when {
+            BaseUtils.isPkgExists(context,"com.squareup.picasso") -> PicassoImageLoader()
+            BaseUtils.isPkgExists(context,"com.bumptech.glide") -> GlideImageLoader()
+            BaseUtils.isPkgExists(context,"com.facebook.drawee.backends.pipeline.Fresco") -> FrescoImageLoader()
+            BaseUtils.isPkgExists(context,"com.nostra13.universalimageloader") -> UniversalImageLoader()
+            else -> PicassoImageLoader()
+        }
+
+    }
+
 
     fun getImageConfig() :Bitmap.Config = when (imageConfig) {
         1 -> Bitmap.Config.ALPHA_8
@@ -135,6 +144,17 @@ class Configuration() :Parcelable{
         3 -> Bitmap.Config.ARGB_8888
         4 -> Bitmap.Config.RGB_565
         else -> Bitmap.Config.ARGB_8888
+    }
+
+
+    companion object CREATOR : Parcelable.Creator<Configuration> {
+        override fun createFromParcel(parcel: Parcel): Configuration {
+            return Configuration(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Configuration?> {
+            return arrayOfNulls(size)
+        }
     }
 
 }

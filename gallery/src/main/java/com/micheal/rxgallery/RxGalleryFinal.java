@@ -141,6 +141,8 @@ public class RxGalleryFinal {
             type = 3;
         } else if (imageLoaderType == ImageLoaderType.UNIVERSAL) {
             type = 4;
+        }else {
+            type = -1;
         }
         configuration.setImageLoaderType(type);
         return this;
