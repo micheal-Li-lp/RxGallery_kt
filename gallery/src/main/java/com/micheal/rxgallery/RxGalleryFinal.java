@@ -38,8 +38,7 @@ public class RxGalleryFinal {
     private Configuration configuration = new Configuration();
     private RxBusResultDisposable<BaseResultEvent> isRadioDisposable;
 
-    private RxGalleryFinal() {
-    }
+    private RxGalleryFinal() {}
 
     public static RxGalleryFinal with(@NonNull Context context) {
         RxGalleryFinal instance = new RxGalleryFinal();
@@ -128,7 +127,7 @@ public class RxGalleryFinal {
                 c = 4;
                 break;
         }
-        configuration.setImageConfig(c);
+        configuration.imageConfig = c;
         return this;
     }
 

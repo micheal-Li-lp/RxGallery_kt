@@ -36,7 +36,7 @@ class MediaPreviewAdapter (private val mMediaList:List<MediaEntity>, private val
             path!!,
             ivImage,
             mDefaultImage,
-            mConfiguration.getImageConfig1(),
+            mConfiguration.getImageConfig(),
             false,
             mConfiguration.isPlayGif,
             mScreenWidth,

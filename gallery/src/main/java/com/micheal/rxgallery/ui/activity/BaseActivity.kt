@@ -3,7 +3,6 @@ package com.micheal.rxgallery.ui.activity
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.annotation.LayoutRes
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AppCompatActivity
 import com.micheal.rxgallery.BuildConfig
 import com.micheal.rxgallery.Configuration
@@ -21,13 +20,9 @@ abstract class BaseActivity :AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         printActivityLife("onCreate")
-        val intent = intent
-        var bundle: Bundle? = null
-        if (intent != null) {
-            bundle = intent.extras
-        }
+
+        var bundle = intent.extras
 
         if (savedInstanceState != null) {
             mConfiguration = savedInstanceState.getParcelable<Parcelable>(EXTRA_CONFIGURATION) as Configuration

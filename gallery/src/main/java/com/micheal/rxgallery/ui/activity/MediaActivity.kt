@@ -1,6 +1,7 @@
 package com.micheal.rxgallery.ui.activity
 
 import android.content.pm.PackageManager
+import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.StateListDrawable
@@ -54,7 +55,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
     override fun getContentView() = R.layout.gallery_activity_media
 
     override fun onCreateOk(savedInstanceState: Bundle?) {
-        mMediaGridFragment = MediaGridFragment.newInstance(mConfiguration!!)
+        mMediaGridFragment = MediaGridFragment.newInstance(mConfiguration)
 
         tv_over_action.visibility = if (!mConfiguration!!.radio) {
             tv_over_action.setOnClickListener {
@@ -73,7 +74,6 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             View.GONE
         }
 
-        mCheckedList = ArrayList()
         val selectedList = mConfiguration!!.selectedList
         if (!selectedList.isNullOrEmpty()) {
             mCheckedList.addAll(selectedList)
@@ -111,6 +111,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             R.attr.gallery_toolbar_close_color,
             R.color.gallery_default_toolbar_widget_color
         )
+
         closeDrawable.setColorFilter(closeColor, PorterDuff.Mode.SRC_ATOP)
         toolbar.navigationIcon = closeDrawable
 
@@ -285,89 +286,85 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
         }
     }
 
-    private fun subscribeEvent() {
-        val subscriptionOpenMediaPreviewEvent =
-            RxBus.getDefault().toObservable(OpenMediaPreviewFragmentEvent::class.java)
-                .map { mediaPreviewEvent -> mediaPreviewEvent }
-                .subscribeWith(object : RxBusDisposable<OpenMediaPreviewFragmentEvent>() {
-                      override fun onEvent(t: OpenMediaPreviewFragmentEvent) {
-                        mPreviewPosition = 0
-                        showMediaPreviewFragment()
+    private fun subscribeEvent() = RxBus.getDefault().run {
+        toObservable(OpenMediaPreviewFragmentEvent::class.java)
+            .map { mediaPreviewEvent -> mediaPreviewEvent }
+            .subscribeWith(object : RxBusDisposable<OpenMediaPreviewFragmentEvent>() {
+                override fun onEvent(t: OpenMediaPreviewFragmentEvent) {
+                    mPreviewPosition = 0
+                    showMediaPreviewFragment()
+                }
+            }).run {
+                add(this)
+            }
+        toObservable(MediaCheckChangeEvent::class.java)
+            .map { mediaCheckChangeEvent -> mediaCheckChangeEvent }
+            .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
+                override fun onEvent(t: MediaCheckChangeEvent) {
+                    val mediaBean = t.mediaEntity
+                    if (mCheckedList.contains(mediaBean)) {
+                        mCheckedList.remove(mediaBean)
+                    } else {
+                        mCheckedList.add(mediaBean)
                     }
-                })
 
-        RxBus.getDefault().add(subscriptionOpenMediaPreviewEvent)
-
-        val subscriptionMediaCheckChangeEvent =
-            RxBus.getDefault().toObservable(MediaCheckChangeEvent::class.java)
-                .map { mediaCheckChangeEvent -> mediaCheckChangeEvent }
-                .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
-                    override fun onEvent(t: MediaCheckChangeEvent) {
-                        val mediaBean = t.mediaEntity
-                        if (mCheckedList.contains(mediaBean)) {
-                            mCheckedList.remove(mediaBean)
-                        } else {
-                            mCheckedList.add(mediaBean)
-                        }
-
-                        if (mCheckedList.size > 0) {
-                            val text = resources.getString(
-                                R.string.gallery_over_button_text_checked,
-                                mCheckedList.size,
-                                mConfiguration!!.maxSize
-                            )
-                            tv_over_action.text = text
-                            tv_over_action.isEnabled = true
-                        } else {
-                            tv_over_action.setText(R.string.gallery_over_button_text)
-                            tv_over_action.isEnabled = false
-                        }
+                    if (mCheckedList.size > 0) {
+                        val text = resources.getString(
+                            R.string.gallery_over_button_text_checked,
+                            mCheckedList.size,
+                            mConfiguration!!.maxSize
+                        )
+                        tv_over_action.text = text
+                        tv_over_action.isEnabled = true
+                    } else {
+                        tv_over_action.setText(R.string.gallery_over_button_text)
+                        tv_over_action.isEnabled = false
                     }
-                })
-        RxBus.getDefault().add(subscriptionMediaCheckChangeEvent)
+                }
+            }).run {
+                add(this)
+            }
 
-        val subscriptionMediaViewPagerChangedEvent =
-            RxBus.getDefault().toObservable(MediaViewPagerChangedEvent::class.java)
-                .map { mediaViewPagerChangedEvent -> mediaViewPagerChangedEvent }
-                .subscribeWith(object : RxBusDisposable<MediaViewPagerChangedEvent>() {
-                    override fun onEvent(t: MediaViewPagerChangedEvent) {
-                        val curIndex = t.curIndex
-                        val totalSize = t.totalSize
-                        if (t.isPreview) {
-                            mPreviewPosition = curIndex
-                        } else {
-                            mPagePosition = curIndex
-                        }
-                        val title = getString(R.string.gallery_page_title, curIndex + 1, totalSize)
-                        tv_toolbar_title.text = title
+        toObservable(MediaViewPagerChangedEvent::class.java)
+            .map { mediaViewPagerChangedEvent -> mediaViewPagerChangedEvent }
+            .subscribeWith(object : RxBusDisposable<MediaViewPagerChangedEvent>() {
+                override fun onEvent(t: MediaViewPagerChangedEvent) {
+                    val curIndex = t.curIndex
+                    val totalSize = t.totalSize
+                    if (t.isPreview) {
+                        mPreviewPosition = curIndex
+                    } else {
+                        mPagePosition = curIndex
                     }
-                })
-        RxBus.getDefault().add(subscriptionMediaViewPagerChangedEvent)
+                    val title = getString(R.string.gallery_page_title, curIndex + 1, totalSize)
+                    tv_toolbar_title.text = title
+                }
+            }).run {
+                add(this)
+            }
 
-        val subscriptionCloseRxMediaGridPageEvent =
-            RxBus.getDefault().toObservable(CloseRxMediaGridPageEvent::class.java)
-                .subscribeWith(object : RxBusDisposable<CloseRxMediaGridPageEvent>() {
-                    @Throws(Exception::class)
-                    override fun onEvent(t: CloseRxMediaGridPageEvent) {
-                        finish()
+        toObservable(CloseRxMediaGridPageEvent::class.java)
+            .subscribeWith(object : RxBusDisposable<CloseRxMediaGridPageEvent>() {
+                @Throws(Exception::class)
+                override fun onEvent(t: CloseRxMediaGridPageEvent) {
+                    finish()
+                }
+            }).run {
+                add(this)
+            }
+        toObservable(OpenMediaPageFragmentEvent::class.java)
+            .subscribeWith(object : RxBusDisposable<OpenMediaPageFragmentEvent>() {
+                override fun onEvent(t: OpenMediaPageFragmentEvent) {
+                    mPageMediaList.run {
+                        this.clear()
+                        this.addAll(t.list )
                     }
-                })
-        RxBus.getDefault().add(subscriptionCloseRxMediaGridPageEvent)
-
-        val subscriptionOpenMediaPageFragmentEvent =
-            RxBus.getDefault().toObservable(OpenMediaPageFragmentEvent::class.java)
-                .subscribeWith(object : RxBusDisposable<OpenMediaPageFragmentEvent>() {
-                    override fun onEvent(t: OpenMediaPageFragmentEvent) {
-                        mPageMediaList.run {
-                            this.clear()
-                            this.addAll(t.list )
-                        }
-                        mPagePosition = t.position
-
-                        showMediaPageFragment(mPageMediaList, mPagePosition)
-                    }
-                })
-        RxBus.getDefault().add(subscriptionOpenMediaPageFragmentEvent)
+                    mPagePosition = t.position
+                    showMediaPageFragment(mPageMediaList, mPagePosition)
+                }
+            }).run {
+                add(this)
+            }
     }
 
     override fun showMediaPageFragment(list: List<MediaEntity>, position: Int) {

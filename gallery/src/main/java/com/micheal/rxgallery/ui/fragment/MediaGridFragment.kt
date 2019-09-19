@@ -157,7 +157,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
 
         @JvmStatic
-        fun newInstance(configuration: Configuration) = MediaGridFragment().apply {
+        fun newInstance(configuration: Configuration?) = MediaGridFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(EXTRA_CONFIGURATION,configuration)
             }
@@ -165,10 +165,10 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     }
 
     lateinit var mMediaGridPresenter: MediaGridPresenterImpl
-    var mScreenSize: DisplayMetrics?=null
+    private lateinit var mScreenSize: DisplayMetrics
     private var mMediaEntityList  = ArrayList<MediaEntity>()
     private lateinit var mMediaGridAdapter: MediaGridAdapter
-    private var mBucketAdapter: BucketAdapter? = null
+    private lateinit var mBucketAdapter: BucketAdapter
     private var mBucketEntityList  = ArrayList<BucketEntity>()
     //扫描
     private lateinit var mMediaScanner: MediaScanner
@@ -233,7 +233,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         MediaGridAdapter(
             context as MediaActivity,
             mMediaEntityList,
-            mScreenSize!!.widthPixels,
+            mScreenSize.widthPixels,
             mConfiguration!!
         ).run {
              mMediaGridAdapter = this
@@ -264,9 +264,8 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 context!!, R.color.gallery_bucket_list_item_normal_color
             )
         ).apply {
-            setOnItemClickListener { _, position, _ ->
-                val bucketBean = mBucketEntityList[position]
-                val bucketId = bucketBean.bucketId
+            setOnItemClickListener { _, _, entity ->
+                val bucketId = entity.bucketId
                 rl_bucket_overview.visibility = View.GONE
                 if (TextUtils.equals(mBucketId, bucketId)) {
                     return@setOnItemClickListener
@@ -276,8 +275,8 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                 rv_media.setHasLoadMore(false)
                 mMediaEntityList.clear()
                 mMediaGridAdapter.notifyDataSetChanged()
-                tv_folder_name.text = bucketBean.bucketName
-                mBucketAdapter?.setSelectedBucket(bucketBean)
+                tv_folder_name.text = entity.bucketName
+                mBucketAdapter.setSelectedBucket(entity)
                 rv_media.setFooterViewHide(true)
                 mPage = 1
                 mMediaGridPresenter.getMediaList(mBucketId!!, mPage, LIMIT)
@@ -318,7 +317,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             MediaActivity.REQUEST_STORAGE_READ_ACCESS_PERMISSION
         )
         if (success) {
-            mMediaGridPresenter!!.getMediaList(mBucketId!!, mPage, LIMIT)
+            mMediaGridPresenter.getMediaList(mBucketId!!, mPage, LIMIT)
         }
     }
 
@@ -397,7 +396,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                     override fun onEvent(t: RequestStorageReadAccessPermissionEvent) {
                         if (t.type == RequestStorageReadAccessPermissionEvent.TYPE_WRITE) {
                             if (t.success) {
-                                mMediaGridPresenter?.getMediaList(mBucketId!!, mPage, LIMIT)
+                                mMediaGridPresenter.getMediaList(mBucketId!!, mPage, LIMIT)
                             } else {
                                 activity?.finish()
                             }
@@ -860,7 +859,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }
 
         mBucketEntityList.addAll(list)
-        mBucketAdapter?.setSelectedBucket(list[0])
+        mBucketAdapter.setSelectedBucket(list[0])
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

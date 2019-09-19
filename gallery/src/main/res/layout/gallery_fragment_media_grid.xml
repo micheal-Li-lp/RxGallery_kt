@@ -70,7 +70,8 @@
         android:background="@color/gallery_media_grid_block_color"
         android:clickable="true"
         android:paddingTop="?actionBarSize"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:focusable="true">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_bucket"

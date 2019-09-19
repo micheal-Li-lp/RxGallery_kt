@@ -40,9 +40,9 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
     }
 
     private var mScreenSize: DisplayMetrics? = null
-    private var mMediaPreviewAdapter: MediaPreviewAdapter? = null
-    private var mMediaBeanList =  ArrayList<MediaEntity>()
-    private var mMediaActivity: MediaActivity? = null
+    private lateinit var mMediaPreviewAdapter: MediaPreviewAdapter
+    private var mMediaEntityList =  ArrayList<MediaEntity>()
+    private lateinit var mMediaActivity: MediaActivity
     private var mItemClickPosition: Int = 0
 
     override fun onAttach(context: Context) {
@@ -56,17 +56,16 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
     override fun getContentView() = R.layout.gallery_fragment_media_page
 
     override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
-        mMediaBeanList = ArrayList()
         if (savedInstanceState != null) {
             val mediaList = savedInstanceState.getParcelableArrayList<MediaEntity>(EXTRA_MEDIA_LIST)
             mItemClickPosition = savedInstanceState.getInt(EXTRA_ITEM_CLICK_POSITION)
 
             if (mediaList != null) {
-                mMediaBeanList.addAll(mediaList)
+                mMediaEntityList.addAll(mediaList)
             }
         }
         mMediaPreviewAdapter = MediaPreviewAdapter(
-            mMediaBeanList,
+            mMediaEntityList,
             mScreenSize!!.widthPixels,
             mScreenSize!!.heightPixels,
             mConfiguration!!,
@@ -97,16 +96,16 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
         val mediaList = savedInstanceState.getParcelableArrayList<MediaEntity>(EXTRA_MEDIA_LIST)
         mItemClickPosition = savedInstanceState.getInt(EXTRA_ITEM_CLICK_POSITION)
         if (mediaList != null) {
-            mMediaBeanList?.clear()
-            Logger.i("恢复数据:" + mediaList.size + "  d=" + mediaList[0].originalPath)
-            mMediaBeanList?.addAll(mediaList)
+            mMediaEntityList.clear()
+            Logger.i("恢复数据:${mediaList.size}  d=${mediaList[0].originalPath}")
+            mMediaEntityList.addAll(mediaList)
         }
         view_pager.currentItem = mItemClickPosition
-        mMediaPreviewAdapter?.notifyDataSetChanged()
+        mMediaPreviewAdapter.notifyDataSetChanged()
     }
 
     override fun onSaveState(outState: Bundle) {
-        outState.putParcelableArrayList(EXTRA_MEDIA_LIST, mMediaBeanList)
+        outState.putParcelableArrayList(EXTRA_MEDIA_LIST, mMediaEntityList)
         outState.putInt(EXTRA_ITEM_CLICK_POSITION, mItemClickPosition)
     }
 
@@ -117,25 +116,25 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
     override fun onPageSelected(position: Int) {
         mItemClickPosition = position
 
-        val mediaBean = mMediaBeanList.get(position)
+        val mediaBean = mMediaEntityList[position]
         //判断是否选择
-        if (!mMediaActivity?.mCheckedList.isNullOrEmpty()) {
-            cb_check.isChecked = mMediaActivity!!.mCheckedList.contains(mediaBean)
+        if (!mMediaActivity.mCheckedList.isNullOrEmpty()) {
+            cb_check.isChecked = mMediaActivity.mCheckedList.contains(mediaBean)
         } else {
             cb_check.isChecked = false
         }
 
-        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaBeanList.size, false))
+        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, false))
     }
 
     override fun onClick(p0: View?) {
-        if (mMediaBeanList.isNullOrEmpty()) {
+        if (mMediaEntityList.isNullOrEmpty()) {
             return
         }
 
         val position = view_pager.currentItem
-        val mediaBean = mMediaBeanList.get(position)
-        if (mConfiguration?.maxSize == mMediaActivity?.mCheckedList?.size && !mMediaActivity?.mCheckedList!!.contains(
+        val mediaBean = mMediaEntityList[position]
+        if (mConfiguration?.maxSize == mMediaActivity.mCheckedList.size && !mMediaActivity.mCheckedList.contains(
                 mediaBean
             )
         ) {
