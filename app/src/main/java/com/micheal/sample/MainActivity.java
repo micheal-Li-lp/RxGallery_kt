@@ -295,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                     @Override
                     protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
-                        Toast.makeText(getBaseContext(), "选中了图片路径：" + imageRadioResultEvent.getImageCropEntity().getOriginalPath(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(), "选中了图片路径："+imageRadioResultEvent.getImageCropEntity().getOriginalPath(), Toast.LENGTH_SHORT).show();
                     }
                 })
                 .openGallery();

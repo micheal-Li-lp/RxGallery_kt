@@ -36,7 +36,7 @@ abstract class RecyclingPagerAdapter(private val recycleBin: RecycleBin) :PagerA
     }
 
     override fun isViewFromObject(view: View, obj: Any): Boolean {
-        return view === obj
+        return view == obj
     }
 
 
@@ -48,8 +48,6 @@ abstract class RecyclingPagerAdapter(private val recycleBin: RecycleBin) :PagerA
             recycleBin.addScrapView(view, position, viewType)
         }
     }
-
-
 
     override fun getCount() = 0
 

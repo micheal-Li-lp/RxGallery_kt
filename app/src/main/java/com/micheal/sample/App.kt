@@ -24,13 +24,6 @@ class App : BaseApplication(){
             ImageLoader.getInstance().init(build())
         }
 
-        try {
-            packageManager.getPackageInfo("com.nostra13.universalimageloader",PackageManager.GET_ACTIVITIES)
-
-        } catch (e: PackageManager.NameNotFoundException) {
-            e.printStackTrace()
-            println("没有添加依赖")
-        }
-
     }
+
 }

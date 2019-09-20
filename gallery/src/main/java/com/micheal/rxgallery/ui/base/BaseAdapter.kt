@@ -28,9 +28,7 @@ abstract class BaseAdapter<T : BaseEntity>(private var data: List<T>) : Recycler
     }
 
     /**绑定数据*/
-    override fun onBindViewHolder(holder: BaseHolder<T>, position: Int) {
-        holder.setData(data[position], position)
-    }
+    override fun onBindViewHolder(holder: BaseHolder<T>, position: Int) = holder.setData(data[position], position)
 
     /**返回数据个数*/
     override fun getItemCount() = data.size

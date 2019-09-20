@@ -10,7 +10,7 @@ import com.micheal.rxgallery.utils.Logger
 
 abstract class BaseActivity :AppCompatActivity(){
     companion object{
-        const val EXTRA_PREFIX = BuildConfig.APPLICATION_ID
+        const val EXTRA_PREFIX = BuildConfig.LIBRARY_PACKAGE_NAME
         const val EXTRA_CONFIGURATION = "$EXTRA_PREFIX.Configuration"
         private val CLASS_NAME = BaseActivity::class.java.simpleName
     }

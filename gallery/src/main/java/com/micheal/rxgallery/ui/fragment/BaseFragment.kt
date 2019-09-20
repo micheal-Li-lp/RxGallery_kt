@@ -15,14 +15,14 @@ import java.util.*
 
 abstract class BaseFragment : Fragment() {
     companion object{
-        const val EXTRA_PREFIX = BuildConfig.APPLICATION_ID
+        const val EXTRA_PREFIX = BuildConfig.LIBRARY_PACKAGE_NAME
         const val EXTRA_CONFIGURATION = "$EXTRA_PREFIX.Configuration"
         private val fragmentStack = Stack<BaseFragment>()
         private val CLASS_NAME = BaseFragment::class.java.simpleName
         private val BUNDLE_KEY = "KEY_$CLASS_NAME"
     }
 
-    var mSaveDataBundle: Bundle? = null
+    private var mSaveDataBundle: Bundle? = null
     var mConfiguration: Configuration? = null
 
     override fun onAttach(context: Context) {

@@ -7,7 +7,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.DisplayMetrics
@@ -108,7 +107,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         @JvmStatic
         fun setImageStoreDir(imgFile :String){
             mImageStoreDir = File(
-                Environment.getExternalStorageDirectory(),
+                BaseUtils.getExternalDirectory(),
                 "/DCIM" + File.separator + imgFile + File.separator
             )
             Logger.i("设置图片保存路径为：${mImageStoreDir?.absolutePath}" )
@@ -147,8 +146,8 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         @JvmStatic
         fun setImageStoreCropDir(imgFile :String){
             mImageStoreCropDir = File(
-                Environment.getExternalStorageDirectory(),
-                "/DCIM" + File.separator + imgFile + File.separator
+                BaseUtils.getExternalDirectory(),
+                "/DCIM${File.separator}$imgFile${File.separator}"
             )
             if (!mImageStoreCropDir!!.exists()) {
                 mImageStoreCropDir!!.mkdirs()
@@ -795,7 +794,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     private fun onLoadFile() {
         //没有的话就默认路径
         if (getImageStoreDirByFile() == null && getImageStoreDirByStr() == null) {
-            mImageStoreDir = File(Environment.getExternalStorageDirectory(), "/DCIM/IMMQY/")
+            mImageStoreDir = File(BaseUtils.getExternalDirectory(), "/DCIM/IMMQY/")
             setImageStoreCropDir(mImageStoreDir!!)
         }
         if (!mImageStoreDir!!.exists()) {

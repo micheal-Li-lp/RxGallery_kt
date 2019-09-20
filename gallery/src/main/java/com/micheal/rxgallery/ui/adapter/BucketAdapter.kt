@@ -88,7 +88,7 @@ class BucketAdapter(private val list: List<BucketEntity> ,private val configurat
                 100,
                 data.orientation
             )
-//                configuration.getImageLoader().displayImage()
+
         }
 
     }

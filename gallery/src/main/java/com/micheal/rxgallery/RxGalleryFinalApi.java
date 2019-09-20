@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -21,6 +20,7 @@ import com.micheal.rxgallery.ui.RxGalleryListener;
 import com.micheal.rxgallery.ui.base.IMultiImageCheckedListener;
 import com.micheal.rxgallery.ui.base.IRadioImageCheckedListener;
 import com.micheal.rxgallery.ui.fragment.MediaGridFragment;
+import com.micheal.rxgallery.utils.BaseUtils;
 import com.micheal.rxgallery.utils.Logger;
 import com.micheal.rxgallery.utils.MediaScanner;
 import com.micheal.rxgallery.utils.SimpleDateUtils;
@@ -282,7 +282,7 @@ public class RxGalleryFinalApi {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss", Locale.CHINA);
             String imageName = "immqy_%s.jpg";
             String filename = String.format(imageName, dateFormat.format(new Date()));
-            File mImageStoreDir = new File(Environment.getExternalStorageDirectory(), "/DCIM/IMMQY/");
+            File mImageStoreDir = new File(BaseUtils.getExternalDirectory(), "/DCIM/IMMQY/");
             if (!mImageStoreDir.exists()) {
                 mImageStoreDir.mkdirs();
             }
@@ -354,7 +354,7 @@ public class RxGalleryFinalApi {
             String imageName = "immqy_%s_%s.jpg";
             Random random = new Random();
             String filename = String.format(imageName, SimpleDateUtils.getNowTime(), "" + random.nextInt(1024));
-            File mImageStoreDir = new File(Environment.getExternalStorageDirectory(), "/DCIM/IMMQY/");
+            File mImageStoreDir = new File(BaseUtils.getExternalDirectory(), "/DCIM/IMMQY/");
           /*  if(!mImageStoreDir.exists()){
                 mImageStoreDir.mkdirs();
             }*/
