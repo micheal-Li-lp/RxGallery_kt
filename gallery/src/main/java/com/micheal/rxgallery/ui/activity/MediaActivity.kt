@@ -297,6 +297,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             }).run {
                 add(this)
             }
+
         toObservable(MediaCheckChangeEvent::class.java)
             .map { mediaCheckChangeEvent -> mediaCheckChangeEvent }
             .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
@@ -352,6 +353,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
             }).run {
                 add(this)
             }
+
         toObservable(OpenMediaPageFragmentEvent::class.java)
             .subscribeWith(object : RxBusDisposable<OpenMediaPageFragmentEvent>() {
                 override fun onEvent(t: OpenMediaPageFragmentEvent) {

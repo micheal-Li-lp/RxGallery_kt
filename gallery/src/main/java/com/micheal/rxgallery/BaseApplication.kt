@@ -9,7 +9,7 @@ abstract class BaseApplication :Application(){
 
     override fun onCreate() {
         super.onCreate()
-        INSTANCE=this
+        INSTANCE = this
     }
 
 }

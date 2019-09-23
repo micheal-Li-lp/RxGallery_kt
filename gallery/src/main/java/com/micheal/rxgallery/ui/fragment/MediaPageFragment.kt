@@ -15,9 +15,10 @@ import com.micheal.rxgallery.rxbus.event.MediaCheckChangeEvent
 import com.micheal.rxgallery.rxbus.event.MediaViewPagerChangedEvent
 import com.micheal.rxgallery.ui.activity.MediaActivity
 import com.micheal.rxgallery.ui.adapter.MediaPreviewAdapter
+import com.micheal.rxgallery.utils.DeviceUtils
 import com.micheal.rxgallery.utils.Logger
 import com.micheal.rxgallery.utils.ThemeUtils
-import kotlinx.android.synthetic.main.gallery_fragment_media_preview.*
+import kotlinx.android.synthetic.main.gallery_fragment_media_page.*
 import java.util.ArrayList
 
 class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
@@ -39,7 +40,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
         }
     }
 
-    private var mScreenSize: DisplayMetrics? = null
+    private lateinit var mScreenSize: DisplayMetrics
     private lateinit var mMediaPreviewAdapter: MediaPreviewAdapter
     private var mMediaEntityList =  ArrayList<MediaEntity>()
     private lateinit var mMediaActivity: MediaActivity
@@ -56,6 +57,8 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
     override fun getContentView() = R.layout.gallery_fragment_media_page
 
     override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
+        mScreenSize = DeviceUtils.getScreenSize(context!!)
+
         if (savedInstanceState != null) {
             val mediaList = savedInstanceState.getParcelableArrayList<MediaEntity>(EXTRA_MEDIA_LIST)
             mItemClickPosition = savedInstanceState.getInt(EXTRA_ITEM_CLICK_POSITION)
@@ -66,8 +69,8 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
         }
         mMediaPreviewAdapter = MediaPreviewAdapter(
             mMediaEntityList,
-            mScreenSize!!.widthPixels,
-            mScreenSize!!.heightPixels,
+            mScreenSize.widthPixels,
+            mScreenSize.heightPixels,
             mConfiguration!!,
             ThemeUtils.resolveColor(
                 activity,
@@ -75,18 +78,21 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
                 R.color.gallery_default_page_bg
             ),
             ContextCompat.getDrawable(
-                activity!!,
+                context!!,
                 ThemeUtils.resolveDrawableRes(
-                    activity,
+                    context,
                     R.attr.gallery_default_image,
                     R.drawable.gallery_default_image
                 )
             )
         )
-        view_pager.adapter = mMediaPreviewAdapter
-        cb_check.setOnClickListener(this)
-        view_pager.currentItem = mItemClickPosition
-        view_pager.addOnPageChangeListener(this)
+        view_pager_page.run {
+            adapter = mMediaPreviewAdapter
+            currentItem = mItemClickPosition
+            addOnPageChangeListener(this@MediaPageFragment)
+        }
+        mMediaPreviewAdapter.notifyDataSetChanged()
+        cb_page_check.setOnClickListener(this)
     }
 
     override fun onFirstTimeLaunched() {}
@@ -100,7 +106,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
             Logger.i("恢复数据:${mediaList.size}  d=${mediaList[0].originalPath}")
             mMediaEntityList.addAll(mediaList)
         }
-        view_pager.currentItem = mItemClickPosition
+        view_pager_page.currentItem = mItemClickPosition
         mMediaPreviewAdapter.notifyDataSetChanged()
     }
 
@@ -118,10 +124,10 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
 
         val mediaBean = mMediaEntityList[position]
         //判断是否选择
-        if (!mMediaActivity.mCheckedList.isNullOrEmpty()) {
-            cb_check.isChecked = mMediaActivity.mCheckedList.contains(mediaBean)
+        cb_page_check.isChecked = if (!mMediaActivity.mCheckedList.isNullOrEmpty()) {
+            mMediaActivity.mCheckedList.contains(mediaBean)
         } else {
-            cb_check.isChecked = false
+            false
         }
 
         RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, false))
@@ -132,7 +138,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
             return
         }
 
-        val position = view_pager.currentItem
+        val position = view_pager_page.currentItem
         val mediaBean = mMediaEntityList[position]
         if (mConfiguration?.maxSize == mMediaActivity.mCheckedList.size && !mMediaActivity.mCheckedList.contains(
                 mediaBean
@@ -144,7 +150,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
                     .getString(R.string.gallery_image_max_size_tip, mConfiguration!!.maxSize),
                 Toast.LENGTH_SHORT
             ).show()
-            cb_check.isChecked = false
+            cb_page_check.isChecked = false
         } else {
             RxBus.getDefault().post(MediaCheckChangeEvent(mediaBean))
         }

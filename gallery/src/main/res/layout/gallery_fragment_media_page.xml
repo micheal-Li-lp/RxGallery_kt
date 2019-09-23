@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <cn.finalteam.rxgalleryfinal.ui.widget.
+    <com.micheal.rxgallery.ui.widget.FixViewPager
         android:id="@+id/view_pager_page"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

@@ -1,6 +1,5 @@
 package com.micheal.sample
 
-import android.content.pm.PackageManager
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.micheal.rxgallery.BaseApplication
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator

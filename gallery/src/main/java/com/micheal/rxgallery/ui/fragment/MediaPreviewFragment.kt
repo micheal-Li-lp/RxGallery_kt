@@ -37,9 +37,9 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
         }
     }
 
-    private var mScreenSize: DisplayMetrics?=null
-    private var mMediaBeanList = ArrayList<MediaEntity>()
-    private var mMediaActivity: MediaActivity? = null
+    private lateinit var mScreenSize: DisplayMetrics
+    private var mMediaEntityList = ArrayList<MediaEntity>()
+    private lateinit var mMediaActivity: MediaActivity
     private var mPagerPosition: Int = 0
 
 
@@ -55,13 +55,12 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
     override fun onViewCreatedOk(view: View, savedInstanceState: Bundle?) {
 
         mScreenSize = DeviceUtils.getScreenSize(context!!)
-        mMediaBeanList = java.util.ArrayList()
-        if (!mMediaActivity?.mCheckedList.isNullOrEmpty()) {
-            mMediaBeanList.addAll(mMediaActivity!!.mCheckedList)
+        if (!mMediaActivity.mCheckedList.isNullOrEmpty()) {
+            mMediaEntityList.addAll(mMediaActivity.mCheckedList)
         }
         val mMediaPreviewAdapter = MediaPreviewAdapter(
-            mMediaBeanList,
-            mScreenSize!!.widthPixels, mScreenSize!!.heightPixels, mConfiguration!!,
+            mMediaEntityList,
+            mScreenSize.widthPixels, mScreenSize.heightPixels, mConfiguration!!,
             ThemeUtils.resolveColor(
                 activity,
                 R.attr.gallery_page_bg,
@@ -90,7 +89,7 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
         view_pager.addOnPageChangeListener(this)
         //#ADD UI预览数量的BUG
         RxBus.getDefault()
-            .post(MediaViewPagerChangedEvent(mPagerPosition, mMediaBeanList.size, true))
+            .post(MediaViewPagerChangedEvent(mPagerPosition, mMediaEntityList.size, true))
 
     }
 
@@ -133,19 +132,19 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
 
     override fun onPageSelected(position: Int) {
         mPagerPosition = position
-        val mediaBean = mMediaBeanList[position]
+        val mediaBean = mMediaEntityList[position]
         cb_check.isChecked = false
         //判断是否选择
         if (mMediaActivity != null && !mMediaActivity?.mCheckedList.isNullOrEmpty()) {
             cb_check.isChecked = mMediaActivity?.mCheckedList!!.contains(mediaBean)
         }
 
-        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaBeanList.size, true))
+        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, true))
     }
 
     override fun onClick(p0: View?) {
         val position = view_pager.currentItem
-        val mediaBean = mMediaBeanList[position]
+        val mediaBean = mMediaEntityList[position]
         if (mConfiguration?.maxSize == mMediaActivity?.mCheckedList?.size && !mMediaActivity?.mCheckedList!!.contains(
                 mediaBean
             )
