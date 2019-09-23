@@ -85,8 +85,8 @@ public class RecyclerViewFinal extends RecyclerView {
     @SuppressLint("InflateParams")
     private void init(Context context) {
         mFooterView = LayoutInflater.from(context).inflate(R.layout.gallery_loading_view_final_footer_default, null);
-        mPbLoading = (ProgressBar) mFooterView.findViewById(R.id.pb_loading);
-        mTvMessage = (TextView) mFooterView.findViewById(R.id.tv_loading_msg);
+        mPbLoading = mFooterView.findViewById(R.id.pb_loading);
+        mTvMessage = mFooterView.findViewById(R.id.tv_loading_msg);
 
 //        setHasLoadMore(false);
         addOnScrollListener(new RecyclerViewOnScrollListener());

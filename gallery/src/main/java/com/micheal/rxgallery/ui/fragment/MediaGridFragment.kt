@@ -78,7 +78,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
         /**
          * getImageStoreDir
-         *
          * @return 存储路径
          */
         @JvmStatic
@@ -86,7 +85,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
         /**
          * getImageStoreDir
-         *
          * @return 存储路径
          */
         @JvmStatic
@@ -108,7 +106,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         fun setImageStoreDir(imgFile :String){
             mImageStoreDir = File(
                 BaseUtils.getExternalDirectory(),
-                "/DCIM" + File.separator + imgFile + File.separator
+                "/DCIM${File.separator}$imgFile${File.separator}"
             )
             Logger.i("设置图片保存路径为：${mImageStoreDir?.absolutePath}" )
         }
@@ -165,7 +163,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
 
     lateinit var mMediaGridPresenter: MediaGridPresenterImpl
     private lateinit var mScreenSize: DisplayMetrics
-    private var mMediaEntityList  = ArrayList<MediaEntity>()
+    private var mMediaEntityList = ArrayList<MediaEntity>()
     private lateinit var mMediaGridAdapter: MediaGridAdapter
     private lateinit var mBucketAdapter: BucketAdapter
     private var mBucketEntityList  = ArrayList<BucketEntity>()
@@ -189,7 +187,6 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     private var uCropTitle: String? = null
     private var requestStorageAccessPermissionTips: String? = null
 
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mMediaScanner = MediaScanner(context)
@@ -203,7 +200,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
             addItemDecoration(MarginDecoration(context!!))
             GridLayoutManager(context, 3).run {
                 orientation = GridLayoutManager.VERTICAL
-                layoutManager=this
+                layoutManager = this
             }
             setOnLoadMoreListener(this@MediaGridFragment)
             setFooterViewHide(true)
@@ -247,7 +244,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
         }.run {
             rv_bucket.addItemDecoration(
                 HorizontalDividerItemDecoration.Builder(context!!)
-                    .color(resources.getColor(R.color.gallery_bucket_list_decoration_color))
+                    .color(BaseUtils.getColor(context!!,R.color.gallery_bucket_list_decoration_color))
                     .size(resources.getDimensionPixelSize(R.dimen.gallery_divider_decoration_height))
                     .margin(
                         resources.getDimensionPixelSize(R.dimen.gallery_bucket_margin),

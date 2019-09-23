@@ -195,7 +195,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         } else {
             //            RxGalleryFinalApi.openZKCamera(MainActivity.this);
 
-            SimpleRxGalleryFinal.get().init(
+            SimpleRxGalleryFinal.init(
                     new SimpleRxGalleryFinal.RxGalleryFinalCropListener() {
                         @NonNull
                         @Override
@@ -498,7 +498,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        SimpleRxGalleryFinal.get().onActivityResult(requestCode, resultCode, data);
+        SimpleRxGalleryFinal.onActivityResult(requestCode, resultCode, data);
 //        if (requestCode == RxGalleryFinalApi.TAKE_IMAGE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
 //            Logger.i("拍照OK，图片路径:" + RxGalleryFinalApi.fileImagePath.getPath());
 //            //刷新相册数据库

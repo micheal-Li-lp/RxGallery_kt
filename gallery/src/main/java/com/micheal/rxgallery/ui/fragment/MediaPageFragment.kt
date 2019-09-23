@@ -48,7 +48,6 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
         if (context is MediaActivity) {
             mMediaActivity = context
         }
@@ -110,9 +109,9 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
         mMediaPreviewAdapter.notifyDataSetChanged()
     }
 
-    override fun onSaveState(outState: Bundle) {
-        outState.putParcelableArrayList(EXTRA_MEDIA_LIST, mMediaEntityList)
-        outState.putInt(EXTRA_ITEM_CLICK_POSITION, mItemClickPosition)
+    override fun onSaveState(outState: Bundle) = outState.run {
+        putParcelableArrayList(EXTRA_MEDIA_LIST, mMediaEntityList)
+        putInt(EXTRA_ITEM_CLICK_POSITION, mItemClickPosition)
     }
 
     override fun onPageScrollStateChanged(state: Int) {}
