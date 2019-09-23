@@ -1,7 +1,6 @@
 package com.micheal.rxgallery.ui.activity
 
 import android.content.pm.PackageManager
-import android.graphics.ColorFilter
 import android.graphics.PorterDuff
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.StateListDrawable
@@ -14,7 +13,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.Toolbar
 import com.micheal.rxgallery.R
-import com.micheal.rxgallery.entity.MediaEntity
+import com.micheal.rxgallery.entity.MediaEntity 
 import com.micheal.rxgallery.rxbus.RxBus
 import com.micheal.rxgallery.rxbus.RxBusDisposable
 import com.micheal.rxgallery.rxbus.event.*
@@ -64,7 +63,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
                 } else {
                     if (!mCheckedList.isNullOrEmpty()) {
                         val event = ImageMultipleResultEvent(mCheckedList)
-                        RxBus.getDefault().post(event)
+                        RxBus.post(event)
                         finish()
                     }
                 }
@@ -286,7 +285,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
         }
     }
 
-    private fun subscribeEvent() = RxBus.getDefault().run {
+    private fun subscribeEvent() = RxBus.run {
         toObservable(OpenMediaPreviewFragmentEvent::class.java)
             .map { mediaPreviewEvent -> mediaPreviewEvent }
             .subscribeWith(object : RxBusDisposable<OpenMediaPreviewFragmentEvent>() {
@@ -407,9 +406,9 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
 
     override fun onDestroy() {
         super.onDestroy()
-        RxBus.getDefault().removeAllStickyEvents()
-        RxBus.getDefault().clear()
-        RxJob.getDefault().clearJob()
+        RxBus.removeAllStickyEvents()
+        RxBus.clear()
+        RxJob.clearJob()
     }
 
     private fun createDefaultOverButtonBgDrawable(): StateListDrawable {
@@ -447,7 +446,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
         Logger.i("onRequestPermissionsResult:requestCode=$requestCode permissions=${permissions[0]}" )
         when (requestCode) {
             REQUEST_STORAGE_READ_ACCESS_PERMISSION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                RxBus.getDefault().post(
+                RxBus.post(
                     RequestStorageReadAccessPermissionEvent(
                         true,
                         RequestStorageReadAccessPermissionEvent.TYPE_WRITE
@@ -457,7 +456,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
                 finish()
             }
             REQUEST_STORAGE_WRITE_ACCESS_PERMISSION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                RxBus.getDefault().post(
+                RxBus.post(
                     RequestStorageReadAccessPermissionEvent(
                         true,
                         RequestStorageReadAccessPermissionEvent.TYPE_WRITE
@@ -467,7 +466,7 @@ class MediaActivity : BaseActivity() , ActivityFragmentView{
                 finish()
             }
             REQUEST_CAMERA_ACCESS_PERMISSION -> if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                RxBus.getDefault().post(
+                RxBus.post(
                     RequestStorageReadAccessPermissionEvent(
                         true,
                         RequestStorageReadAccessPermissionEvent.TYPE_CAMERA

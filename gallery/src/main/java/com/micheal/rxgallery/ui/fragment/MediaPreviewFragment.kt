@@ -88,8 +88,7 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
         view_pager.setCurrentItem(mPagerPosition, false)
         view_pager.addOnPageChangeListener(this)
         //#ADD UI预览数量的BUG
-        RxBus.getDefault()
-            .post(MediaViewPagerChangedEvent(mPagerPosition, mMediaEntityList.size, true))
+        RxBus.post(MediaViewPagerChangedEvent(mPagerPosition, mMediaEntityList.size, true))
 
     }
 
@@ -139,7 +138,7 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
             cb_check.isChecked = mMediaActivity?.mCheckedList!!.contains(mediaBean)
         }
 
-        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, true))
+        RxBus.post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, true))
     }
 
     override fun onClick(p0: View?) {
@@ -157,14 +156,14 @@ class MediaPreviewFragment : BaseFragment(), ViewPager.OnPageChangeListener,
             ).show()
             cb_check.isChecked = false
         } else {
-            RxBus.getDefault().post(MediaCheckChangeEvent(mediaBean))
+            RxBus.post(MediaCheckChangeEvent(mediaBean))
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         mPagerPosition = 0
-        RxBus.getDefault().post(CloseMediaViewPageFragmentEvent())
+        RxBus.post(CloseMediaViewPageFragmentEvent())
     }
 
 }

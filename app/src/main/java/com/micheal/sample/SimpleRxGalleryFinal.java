@@ -73,7 +73,7 @@ public class SimpleRxGalleryFinal {
             case UCrop.RESULT_ERROR:
                 if (data != null) {
                     Throwable cropError = UCrop.getError(data);
-                    if (cropError != null) {
+                    if (cropError != null&&cropError.getMessage()!=null) {
                         listener.onCropError(cropError.getMessage());
                     } else {
                         listener.onCropError("裁剪出现未知错误");

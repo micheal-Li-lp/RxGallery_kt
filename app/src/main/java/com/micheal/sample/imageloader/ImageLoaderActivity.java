@@ -50,7 +50,7 @@ public class ImageLoaderActivity extends AppCompatActivity {
                 .imageLoader(imageLoaderType)
                 .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                     @Override
-                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                         Toast.makeText(getBaseContext(), "选中了图片路径：" + imageRadioResultEvent.getImageCropEntity().getOriginalPath(), Toast.LENGTH_SHORT).show();
                     }
                 }).openGallery();

@@ -366,7 +366,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
      * RxBus
      */
     private fun subscribeEvent() {
-        RxBus.getDefault().run {
+        RxBus.run {
             toObservable(MediaCheckChangeEvent::class.java)
                 .subscribeWith(object : RxBusDisposable<MediaCheckChangeEvent>() {
                     override fun onEvent(t: MediaCheckChangeEvent) {
@@ -532,7 +532,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
                     val list = mMediaEntityList.subList(1, mMediaEntityList.size)
                     gridMediaList.addAll(list)
                 }
-                RxBus.getDefault().post(OpenMediaPageFragmentEvent(gridMediaList, pos))
+                RxBus.post(OpenMediaPageFragmentEvent(gridMediaList, pos))
             }
         }
     }
@@ -658,7 +658,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
      */
     private fun setPostMediaEntity(mediaBean: MediaEntity) = ImageCropEntity().run{
         copyMediaEntity(mediaBean)
-        RxBus.getDefault().post(ImageRadioResultEvent(this))
+        RxBus.post(ImageRadioResultEvent(this))
     }
 
     override fun loadMore() {
@@ -668,7 +668,7 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     override fun onClick(v: View) {
         val id = v.id
         if (id == R.id.tv_preview) {
-            RxBus.getDefault().post(OpenMediaPreviewFragmentEvent())
+            RxBus.post(OpenMediaPreviewFragmentEvent())
         } else if (id == R.id.tv_folder_name) {
             v.isEnabled = false
             if (isShowRvBucketView()) {
@@ -784,8 +784,8 @@ class MediaGridFragment :BaseFragment(), MediaGridView,RecyclerViewFinal.OnLoadM
     override fun onDestroyView() {
         super.onDestroyView()
 
-        RxBus.getDefault().remove(mMediaCheckChangeDisposable)
-        RxBus.getDefault().remove(mCloseMediaViewPageFragmentDisposable)
+        RxBus.remove(mMediaCheckChangeDisposable)
+        RxBus.remove(mCloseMediaViewPageFragmentDisposable)
     }
 
     /**

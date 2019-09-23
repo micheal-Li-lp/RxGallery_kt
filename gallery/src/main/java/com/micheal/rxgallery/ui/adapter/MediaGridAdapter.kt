@@ -121,7 +121,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
                                     )
                                 )
                             } else {
-                                RxBus.getDefault().post(MediaCheckChangeEvent(data))
+                                RxBus.post(MediaCheckChangeEvent(data))
                             }
                         }
                         setOnCheckedChangeListener{view,isCheck->
@@ -161,7 +161,7 @@ class MediaGridAdapter(private val mMediaActivity :MediaActivity,
 
                 if (!File(data.thumbnailBigPath!!).exists() || !File(data.thumbnailSmallPath!!).exists()) {
                     val job = ImageThmbnailJobCreate(mMediaActivity, data).create()
-                    RxJob.getDefault().addJob(job)
+                    RxJob.addJob(job)
                 }
                 val path = if (configuration.isPlayGif && (imageLoaderType == 3 || imageLoaderType == 2)) {
                    data.originalPath

@@ -32,7 +32,10 @@ import com.micheal.rxgallery.utils.PermissionCheckUtils;
 import com.micheal.sample.imageloader.ImageLoaderActivity;
 import com.yalantis.ucrop.model.AspectRatio;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 示例
@@ -49,7 +52,7 @@ import java.util.List;
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static String TAG ="main_activity";
+    private static final String TAG ="main_activity";
 
     RadioButton mRbRadioIMG, mRbMutiIMG, mRbOpenC, mRbRadioVD, mRbMutiVD, mRbCropZD, mRbCropZVD;
 
@@ -67,25 +70,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.btn_open_vd).setOnClickListener(this);
         findViewById(R.id.btn_open_crop).setOnClickListener(this);
         findViewById(R.id.btn_open_set_path).setOnClickListener(this);
-        mRbRadioIMG = (RadioButton) findViewById(R.id.rb_radio_img);
-        mRbMutiIMG = (RadioButton) findViewById(R.id.rb_muti_img);
-        mRbRadioVD = (RadioButton) findViewById(R.id.rb_radio_vd);
-        mRbMutiVD = (RadioButton) findViewById(R.id.rb_muti_vd);
-        mRbOpenC = (RadioButton) findViewById(R.id.rb_openC);
-        mRbCropZD = (RadioButton) findViewById(R.id.rb_radio_crop_z);
-        mRbCropZVD = (RadioButton) findViewById(R.id.rb_radio_crop_vz);
+        mRbRadioIMG = findViewById(R.id.rb_radio_img);
+        mRbMutiIMG = findViewById(R.id.rb_muti_img);
+        mRbRadioVD = findViewById(R.id.rb_radio_vd);
+        mRbMutiVD = findViewById(R.id.rb_muti_vd);
+        mRbOpenC = findViewById(R.id.rb_openC);
+        mRbCropZD = findViewById(R.id.rb_radio_crop_z);
+        mRbCropZVD = findViewById(R.id.rb_radio_crop_vz);
         //多选事件的回调
         RxGalleryListener
                 .getInstance()
                 .setMultiImageCheckedListener(
                         new IMultiImageCheckedListener() {
                             @Override
-                            public void selectedImg(Object t, boolean isChecked) {
+                            public void selectedImg(@NotNull Object t, boolean isChecked) {
                                 Toast.makeText(getBaseContext(), isChecked ? "选中" : "取消选中", Toast.LENGTH_SHORT).show();
                             }
 
                             @Override
-                            public void selectedImgMax(Object t, boolean isChecked, int maxSize) {
+                            public void selectedImgMax(@NotNull Object t, boolean isChecked, int maxSize) {
                                 Toast.makeText(getBaseContext(), "你最多只能选择" + maxSize + "张图片", Toast.LENGTH_SHORT).show();
                             }
                         });
@@ -95,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setRadioImageCheckedListener(
                         new IRadioImageCheckedListener() {
                             @Override
-                            public void cropAfter(Object t) {
+                            public void cropAfter(@NotNull Object t) {
                                 Toast.makeText(getBaseContext(), t.toString(), Toast.LENGTH_SHORT).show();
                             }
 
@@ -267,9 +270,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .subscribe(new RxBusResultDisposable<ImageMultipleResultEvent>() {
 
                     @Override
-                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                         list = imageMultipleResultEvent.getMediaResultList();
-                        Toast.makeText(getBaseContext(), "已选择" + imageMultipleResultEvent.getMediaResultList().size() + "张图片", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getBaseContext(),
+                                "已选择" + Objects.requireNonNull(imageMultipleResultEvent.getMediaResultList()).size() + "张图片", Toast.LENGTH_SHORT
+                        ).show();
                     }
 
                     @Override
@@ -294,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .imageLoader(ImageLoaderType.FRESCO)
                 .subscribe(new RxBusResultDisposable<ImageRadioResultEvent>() {
                     @Override
-                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                         Toast.makeText(getBaseContext(), "选中了图片路径："+imageRadioResultEvent.getImageCropEntity().getOriginalPath(), Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -314,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setVDMultipleResultEvent(
                                 new RxBusResultDisposable<ImageMultipleResultEvent>() {
                                     @Override
-                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                                         Logger.i("多选视频的回调");
                                     }
                                 }).open();
@@ -329,7 +334,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setVDMultipleResultEvent(
                                 new RxBusResultDisposable<ImageMultipleResultEvent>() {
                                     @Override
-                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                                         Logger.i("多选视频的回调");
                                     }
                                 }).open();
@@ -341,7 +346,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 RxGalleryFinalApi
                         .openMultiSelectVD(this, new RxBusResultDisposable<ImageMultipleResultEvent>() {
                             @Override
-                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                                 Logger.i("多选视频的回调");
                             }
                         });
@@ -359,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 .setType(RxGalleryFinalApi.SelectRXType.TYPE_VIDEO, RxGalleryFinalApi.SelectRXType.TYPE_SELECT_RADIO)
                 .setVDRadioResultEvent(new RxBusResultDisposable<ImageRadioResultEvent>() {
                     @Override
-                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                         Toast.makeText(getApplicationContext(), imageRadioResultEvent.getImageCropEntity().getOriginalPath(), Toast.LENGTH_SHORT).show();
                     }
                 })
@@ -381,7 +386,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setImageMultipleResultEvent(
                                 new RxBusResultDisposable<ImageMultipleResultEvent>() {
                                     @Override
-                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                                         Logger.i("多选图片的回调");
                                     }
                                 }).open();
@@ -395,7 +400,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setType(RxGalleryFinalApi.SelectRXType.TYPE_IMAGE, RxGalleryFinalApi.SelectRXType.TYPE_SELECT_MULTI)
                         .setImageMultipleResultEvent(new RxBusResultDisposable<ImageMultipleResultEvent>() {
                             @Override
-                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                            protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                                 Logger.i("多选图片的回调");
                             }
                         }).open();
@@ -406,7 +411,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //直接打开
                 RxGalleryFinalApi.openMultiSelectImage(this, new RxBusResultDisposable<ImageMultipleResultEvent>() {
                     @Override
-                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) throws Exception {
+                    protected void onEvent(ImageMultipleResultEvent imageMultipleResultEvent) {
                         Logger.i("多选图片的回调");
                     }
                 });
@@ -430,7 +435,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 instance
                         .setImageRadioResultEvent(new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
-                            protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                            protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                                 Logger.i("单选图片的回调");
                             }
                         }).open();
@@ -443,7 +448,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .setType(RxGalleryFinalApi.SelectRXType.TYPE_IMAGE, RxGalleryFinalApi.SelectRXType.TYPE_SELECT_RADIO)
                         .setImageRadioResultEvent(new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
-                            protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                            protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                                 Logger.i("单选图片的回调");
                             }
                         }).open();
@@ -455,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 RxGalleryFinalApi
                         .openRadioSelectImage(MainActivity.this, new RxBusResultDisposable<ImageRadioResultEvent>() {
                             @Override
-                            protected void onEvent(ImageRadioResultEvent o) throws Exception {
+                            protected void onEvent(ImageRadioResultEvent o) {
                                 Logger.i("单选图片的回调");
                             }
                         }, true);
@@ -468,14 +473,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .openGalleryRadioImgDefault(
                                 new RxBusResultDisposable<ImageRadioResultEvent>() {
                                     @Override
-                                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) throws Exception {
+                                    protected void onEvent(ImageRadioResultEvent imageRadioResultEvent) {
                                         Logger.i("只要选择图片就会触发");
                                     }
                                 })
                         .onCropImageResult(
                                 new IRadioImageCheckedListener() {
                                     @Override
-                                    public void cropAfter(Object t) {
+                                    public void cropAfter(@NotNull Object t) {
                                         Logger.i("裁剪完成");
                                     }
 

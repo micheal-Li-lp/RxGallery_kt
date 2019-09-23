@@ -9,6 +9,8 @@ import com.micheal.rxgallery.Configuration;
 import com.micheal.rxgallery.R;
 import com.micheal.rxgallery.entity.MediaEntity;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import uk.co.senab.photoview.PhotoView;
@@ -41,8 +43,9 @@ public class MediaPreviewAdapter extends RecyclingPagerAdapter {
         this.mDefaultImage = drawable;
     }
 
+    @NotNull
     @Override
-    public View getView(int position, View convertView, ViewGroup container) {
+    public View getView(int position, View convertView, @NotNull ViewGroup container) {
         MediaEntity mediaBean = mMediaList.get(position);
         if (convertView == null) {
             convertView = View.inflate(container.getContext(), R.layout.gallery_media_image_preview_item, null);

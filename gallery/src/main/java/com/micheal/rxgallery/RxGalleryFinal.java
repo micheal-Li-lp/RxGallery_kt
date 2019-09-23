@@ -298,15 +298,15 @@ public class RxGalleryFinal {
         }
         Disposable disposable;
         if (configuration.getRadio()) {
-            disposable = RxBus.getDefault()
+            disposable = RxBus
                     .toObservable(ImageRadioResultEvent.class)
                     .subscribeWith(isRadioDisposable);
         } else {
-            disposable = RxBus.getDefault()
+            disposable = RxBus
                     .toObservable(ImageMultipleResultEvent.class)
                     .subscribeWith(isRadioDisposable);
         }
-        RxBus.getDefault().add(disposable);
+        RxBus.add(disposable);
 
         Intent intent = new Intent(context, MediaActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

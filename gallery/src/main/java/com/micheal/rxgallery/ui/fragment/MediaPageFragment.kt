@@ -130,7 +130,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
             false
         }
 
-        RxBus.getDefault().post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, false))
+        RxBus.post(MediaViewPagerChangedEvent(position, mMediaEntityList.size, false))
     }
 
     override fun onClick(p0: View?) {
@@ -152,7 +152,7 @@ class MediaPageFragment :BaseFragment(), ViewPager.OnPageChangeListener,
             ).show()
             cb_page_check.isChecked = false
         } else {
-            RxBus.getDefault().post(MediaCheckChangeEvent(mediaBean))
+            RxBus.post(MediaCheckChangeEvent(mediaBean))
         }
     }
 }
